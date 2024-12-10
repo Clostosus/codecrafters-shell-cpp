@@ -9,20 +9,20 @@ int main() {
   std::cerr << std::unitbuf;
 
   auto evaluator = CommandEvaluator();
-
-  // Uncomment this block to pass the first stage
-  std::cout << "$ ";
-  try {
-    std::string input;
-    std::getline(std::cin, input);
-    if(!input.empty()) {
+  while (true) {
+    std::cout << "$ ";
+    try {
+      std::string input;
+      std::getline(std::cin, input);
+      if(!input.empty()) {
         if(evaluator.isValidCommand(input)) {
-            std::cout << "Command recnorized: " << input << std::endl;
+          std::cout << "Command recnorized: " << input << std::endl;
         } else {
-            throw UnknownCommandException(input);
+          throw UnknownCommandException(input);
         }
-    }
-  } catch (UnknownCommandException & err) {
+      }
+    } catch (UnknownCommandException & err) {
       std::cout << err.what() << std::endl;
+    }
   }
 }
