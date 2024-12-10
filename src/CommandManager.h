@@ -10,7 +10,7 @@ class CommandManager {
      class CommandNotFoundException : public std::runtime_error {
      public:
         explicit CommandNotFoundException(const std::string& name)
-            : std::runtime_error("Command not found: " + name) {}
+            : std::runtime_error( name + ": command not found") {}
      };
     private:
         std::vector<Command> commands;
