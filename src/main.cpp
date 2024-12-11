@@ -4,6 +4,39 @@
 #include "Command.h"
 #include "CommandManager.h"
 
+void generateCommands(CommandManager & Manager) {
+    // Beispiel-Command registrieren (Exit)
+    Manager.registerCommand(Command(
+        "exit",
+        "Exits the console",
+        {},
+        [](const std::vector<std::string>& args) { std::exit(stoi(args.at(0))); },
+        [](const std::vector<std::string>& args) {
+            // Validierung des Arguments
+              if (args.size() != 1) {
+                  return false;  // Nur ein Argument sollte übergeben werden
+              }
+
+              // Überprüfen, ob das Argument eine gültige Zahl ist
+              try {
+                  int val = std::stoi(args[0]);
+                  return true;  // Nur wenn das Argument int ist, gilt die Eingabe als gültig
+              } catch (const std::invalid_argument& e) {
+                  return false;  // Ungültiges Argument (keine gültige Zahl)
+              } catch (const std::out_of_range& e) {
+                  return false;  // Zahl ist außerhalb des gültigen Bereichs für int
+              }
+        }
+    ));
+    Manager.registerCommand(Command(
+        "echo", "Prints the input", {},
+        [](const std::vector<std::string>& args) { for (const auto & arg : args) { std::cout << arg;}  std::cout << std::endl; },
+        [](const std::vector<std::string>& args) {
+            return !args.empty();
+        }
+        ));
+}
+
 int main() {
   // Flush after every std::cout / std:cerr
   std::cout << std::unitbuf;
@@ -11,30 +44,7 @@ int main() {
 
   // CommandManager erstellen
   CommandManager manager;
-
-  // Beispiel-Command registrieren (Exit)
-  manager.registerCommand(Command(
-      "exit",
-      "Exits the console",
-      {},
-      [](const std::vector<std::string>& args) { std::exit(stoi(args.at(0))); },
-      [](const std::vector<std::string>& args) {
-          // Validierung des Arguments
-            if (args.size() != 1) {
-                return false;  // Nur ein Argument sollte übergeben werden
-            }
-
-            // Überprüfen, ob das Argument eine gültige Zahl ist
-            try {
-                int val = std::stoi(args[0]);
-                return true;  // Nur wenn das Argument int ist, gilt die Eingabe als gültig
-            } catch (const std::invalid_argument& e) {
-                return false;  // Ungültiges Argument (keine gültige Zahl)
-            } catch (const std::out_of_range& e) {
-                return false;  // Zahl ist außerhalb des gültigen Bereichs für int
-            }
-      }
-  ));
+    generateCommands(manager);
 
     // ReadEvalProcess-Loop
     while (true) {
