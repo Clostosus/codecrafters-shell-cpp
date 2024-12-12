@@ -43,8 +43,9 @@ void generateCommands(CommandManager & Manager) {
             }else {
                 if(args.at(0) != "type") {
                     std::cout << args.at(0) << ": not found" << std::endl;
+                }else {
+                    std::cout << "type" << " is a shell builtin"   << std::endl;
                 }
-                std::cout << "type" << " is a shell builtin"   << std::endl;
             }
         },
         [](const std::vector<std::string>& args) {return args.size() == 1; }
