@@ -36,6 +36,19 @@ void generateCommands(CommandManager & Manager) {
             return !args.empty();
         }
         ));
+    Manager.registerCommand(Command("type", "Prints the type of a command name",{},
+        [Manager](const std::vector<std::string>& args) {
+            if(Manager.getCommand(args.at(0)) != nullptr) {
+                std::cout << args.at(0) << " is a shell builtin"   << std::endl;
+            }else {
+                if(args.at(0) != "type") {
+                    std::cout << args.at(0) << ": not found" << std::endl;
+                }
+                std::cout << "type" << " is a shell builtin"   << std::endl;
+            }
+        },
+        [](const std::vector<std::string>& args) {return args.size() == 1; }
+        ));
 }
 
 int main() {
