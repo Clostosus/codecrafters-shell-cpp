@@ -52,7 +52,6 @@ void generateCommands(CommandManager & Manager) {
                   const char* env_var_value = getenv("PATH");
 
                   auto searcher = FileSearcher();
-                  searcher.addDirFilenamesToList("/home/vitali/Downloads");
                   std::string exePath = searcher.getPathToFile(searchedCmdName);
 
                   if (exePath.empty()) {

@@ -4,6 +4,15 @@
 #include <iostream>
 #include <ostream>
 
+void FileSearcher::addPathDirsFilesToList() {
+    std::string BigPath = getenv("PATH");
+    std::stringstream pathStream(BigPath);
+    std::string SinglePath;
+    while (std::getline(pathStream, SinglePath,':')) {
+        this->addDirFilenamesToList(SinglePath);
+    }
+}
+
 void FileSearcher::addDirFilenamesToList(const std::string& DirPath) {
     // This structure would distinguish a file from a directory
     struct stat sb{};
@@ -27,11 +36,12 @@ FileSearcher::FileSearcher() {
 }
 
 std::string FileSearcher::getPathToFile(const std::string & filename) {
+    addPathDirsFilesToList();
+
     auto it = std::ranges::find_if(pathFilenames ,
     [&filename](const std::string& str) {
-        size_t pos = str.find_last_of('/'); // Finde das letzte '/'
-        std::string lastToken = (pos == std::string::npos) ? str : str.substr(pos + 1); // Extrahiere das Token
-        return lastToken == filename;
+        std::filesystem::path p(str);
+        return p.filename() == filename;
     }
     );
 
