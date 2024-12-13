@@ -3,6 +3,7 @@
 
 #include "Command.h"
 #include "CommandManager.h"
+#include "FileSearcher.h"
 
 void generateCommands(CommandManager & Manager) {
     // Beispiel-Command registrieren (Exit)
@@ -39,14 +40,26 @@ void generateCommands(CommandManager & Manager) {
     Manager.registerCommand(Command("type", "Prints the type of a command name",{},
         [Manager](const std::vector<std::string>& args) {
             if (args.size() != 1) { std::cout << "Usage: type <commandName>" << std::endl; return; }
+            const std::string searchedCmdName = args.at(0);
+
             try {
-                if(Manager.getCommand(args.at(0)) == nullptr) {
+                if(Manager.getCommand(searchedCmdName) == nullptr) {
                     throw CommandManager::CommandNotFoundException(args.at(0));
                 }
-                std::cout << args.at(0) << " is a shell builtin"   << std::endl;
+                std::cout << searchedCmdName << " is a shell builtin"   << std::endl;
             } catch (CommandManager::CommandNotFoundException &e) {
                 if(args.at(0) != "type") {
-                    std::cout << args.at(0) << ": not found" << std::endl;
+                  const char* env_var_value = getenv("PATH");
+
+                  auto searcher = FileSearcher();
+                  searcher.addDirFilenamesToList("/home/vitali/Downloads");
+                  std::string exePath = searcher.getPathToFile(searchedCmdName);
+
+                  if (exePath.empty()) {
+                      std::cout << searchedCmdName << ": not found" << std::endl;
+                  }else {
+                      std::cout << searchedCmdName << " is " << exePath << std::endl;
+                  }
                 }else {
                     std::cout << "type" << " is a shell builtin"   << std::endl;
                 }
