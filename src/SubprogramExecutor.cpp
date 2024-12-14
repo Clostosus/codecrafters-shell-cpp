@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-int SubprogramExecutor::execute(const std::string &path, const std::vector<std::string> &args) const {
+std::string SubprogramExecutor::execute(const std::string &path, const std::vector<std::string> &args) const {
     // Create an Argument-Array for exec
     std::vector<char *> execArgs;
     execArgs.push_back(const_cast<char *>(path.c_str())); // Program name
@@ -46,12 +46,15 @@ int SubprogramExecutor::execute(const std::string &path, const std::vector<std::
         int status;
         waitpid(pid, &status, 0);
         if (WIFEXITED(status)) {
-            return WEXITSTATUS(status); // Rückgabewert des Subprogramms
+            if (WEXITSTATUS(status) != 0) {
+                throw std::runtime_error("Subprogram exited with error code: " + std::to_string(WEXITSTATUS(status)));
+            }
         } else if (WIFSIGNALED(status)) {
             throw std::runtime_error("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
         }
-    } else {
+        return output.str();
+    } else { // fork failed
         throw std::runtime_error("Failed to fork process");
     }
-    return -1; // This line shall never get reached
+    return "";
 }
