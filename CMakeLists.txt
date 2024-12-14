@@ -13,4 +13,6 @@ add_executable(shell ${SOURCE_FILES}
         src/CommandManager.h
         src/FileSearcher.cpp
         src/FileSearcher.h
+        src/SubprogramExecutor.cpp
+        src/SubprogramExecutor.h
 )

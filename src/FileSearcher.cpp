@@ -5,7 +5,7 @@
 #include <ostream>
 
 void FileSearcher::addPathDirsFilesToList() {
-    std::string BigPath = getenv("PATH");
+    const std::string BigPath = getenv("PATH");
     std::stringstream pathStream(BigPath);
     std::string SinglePath;
     while (std::getline(pathStream, SinglePath,':')) {
@@ -19,7 +19,6 @@ void FileSearcher::addDirFilenamesToList(const std::string& DirPath) {
 
     // Looping until all the items of the directory are exhausted
     for (const auto& entry : std::filesystem::directory_iterator(DirPath)) {
-        // Converting the path to const char * in the subsequent lines
         const std::filesystem::path& outfilename = entry.path();
         std::string outfilename_str = outfilename.string();
         const char* path = outfilename_str.c_str();
@@ -38,15 +37,15 @@ FileSearcher::FileSearcher() {
 std::string FileSearcher::getPathToFile(const std::string & filename) {
     addPathDirsFilesToList();
 
-    auto it = std::ranges::find_if(pathFilenames ,
-    [&filename](const std::string& str) {
-        std::filesystem::path p(str);
-        return p.filename() == filename;
-    }
+    const auto it = std::ranges::find_if(pathFilenames ,
+                                         [&filename](const std::string& str) {
+                                             const std::filesystem::path p(str);
+                                             return p.filename() == filename;
+                                         }
     );
 
     if (it != pathFilenames.end()) { return *it.base();}
-    else { return ""; }
+    else{throw FileNotFoundException(filename);}
 }
 
 void FileSearcher::printFilenames() const {
@@ -54,4 +53,3 @@ void FileSearcher::printFilenames() const {
         std::cout << filename << std::endl;
     }
 }
-

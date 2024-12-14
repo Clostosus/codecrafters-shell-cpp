@@ -16,7 +16,7 @@ class CommandManager {
         std::vector<Command> commands;
     public:
         void registerCommand(const Command& command);
-        [[nodiscard]] const Command* getCommand(const std::string& name) const;
+        [[nodiscard]] const Command* getBuiltinCommand(const std::string& name) const;
         void executeCommand(const std::string& name, const std::vector<std::string>& arguments) const;
 };
 

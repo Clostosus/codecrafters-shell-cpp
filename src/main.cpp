@@ -43,22 +43,20 @@ void generateCommands(CommandManager & Manager) {
             const std::string searchedCmdName = args.at(0);
 
             try {
-                if(Manager.getCommand(searchedCmdName) == nullptr) {
+                if(Manager.getBuiltinCommand(searchedCmdName) == nullptr) {
                     throw CommandManager::CommandNotFoundException(args.at(0));
                 }
                 std::cout << searchedCmdName << " is a shell builtin"   << std::endl;
             } catch (CommandManager::CommandNotFoundException &e) {
                 if(args.at(0) != "type") {
-                  const char* env_var_value = getenv("PATH");
-
                   auto searcher = FileSearcher();
-                  std::string exePath = searcher.getPathToFile(searchedCmdName);
-
-                  if (exePath.empty()) {
-                      std::cout << searchedCmdName << ": not found" << std::endl;
-                  }else {
+                  try {
+                      std::string exePath = searcher.getPathToFile(searchedCmdName);
                       std::cout << searchedCmdName << " is " << exePath << std::endl;
+                  } catch (FileSearcher::FileNotFoundException &filefindError) {
+                      std::cout << filefindError.what() << ": not found" << std::endl;
                   }
+
                 }else {
                     std::cout << "type" << " is a shell builtin"   << std::endl;
                 }

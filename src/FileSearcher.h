@@ -3,7 +3,10 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <functional>
 #include <sys/stat.h>
+
+
 
 class FileSearcher {
 private:
@@ -15,6 +18,11 @@ public:
     ~FileSearcher()=default;
     std::string getPathToFile(const std::string &filename);
     void printFilenames() const;
+
+    class FileNotFoundException final : public std::runtime_error{
+        public:
+        explicit FileNotFoundException(const std::string &message): runtime_error(message) {}
+    };
 };
 
 
