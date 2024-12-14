@@ -28,14 +28,15 @@ void CommandManager::executeCommand(const std::string& name, const std::vector<s
     } else { // Search for executable File and execute it
         SubprogramExecutor executor;
         FileSearcher searcher;
+        std::string pathToFile;
         try {
-            searcher.getPathToFile(name);
+            pathToFile = searcher.getPathToFile(name);
         } catch (FileSearcher::FileNotFoundException &fileNotFoundError) {
             throw CommandNotFoundException(name);
         }
 
         try {
-            int returnCode = executor.execute("/bin/ls", {"-l", "-a"});
+            int returnCode = executor.execute(pathToFile, arguments);
             std::cout << "Subprogram exited with code: " << returnCode << std::endl;
         } catch (const std::exception &e) {
             std::cerr << "Error: " << e.what() << std::endl;
