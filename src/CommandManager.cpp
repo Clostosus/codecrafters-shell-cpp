@@ -26,18 +26,18 @@ void CommandManager::executeCommand(const std::string& name, const std::vector<s
             throw std::runtime_error("Invalid arguments for command: " + name);
         }
     } else { // Search for executable File and execute it
-        SubprogramExecutor executor;
-        FileSearcher searcher;
         std::string pathToFile;
         try {
+            FileSearcher searcher;
             pathToFile = searcher.getPathToFile(name);
         } catch (FileSearcher::FileNotFoundException &fileNotFoundError) {
             throw CommandNotFoundException(name);
         }
 
         try {
-            int returnCode = executor.execute(pathToFile, arguments);
-            std::cout << "Subprogram exited with code: " << returnCode << std::endl;
+            const SubprogramExecutor executor;
+            const int returnCode = executor.execute(pathToFile, arguments);
+            if(returnCode != 0){ std::cout << "Error while executing command: " << pathToFile << std::endl; }
         } catch (const std::exception &e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
