@@ -31,7 +31,7 @@ protected:
 public:
     Command(const std::string& name, const std::string& description, const std::vector<std::string>& arguments,
      const std::function<void(const std::vector<std::string>& args)> &execute, const std::function<bool(const std::vector<std::string>&)> &validate );
-    Command(const std::string& name, const std::string& description, const std::vector<std::string>& arguments);
+    Command(const std::string& name, const std::string& description, const std::function<void(const std::vector<std::string>& args)> &execute);
 
     [[nodiscard]] bool validateArguments(const std::vector<std::string>& args) const;
     void executeCommand(const std::vector<std::string> &args) const;

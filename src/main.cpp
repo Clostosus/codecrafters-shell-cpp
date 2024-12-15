@@ -1,5 +1,7 @@
+#include <cstring>
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
 
 #include "Command.h"
 #include "CommandManager.h"
@@ -37,10 +39,19 @@ void generateCommands(CommandManager & Manager) {
             return !args.empty();
         }
         ));
+    Manager.registerCommand(Command("pwd", "Print the current working directory",
+        [](const std::vector<std::string>& args) {
+            char pathBuffer[1024];
+            if(getcwd(pathBuffer, sizeof(pathBuffer)) != nullptr) {
+                std::cout << pathBuffer << std::endl;
+            } else {
+                std::cout << strerror(errno) << std::endl;
+            }
+        }));
     Manager.registerCommand(Command("type", "Prints the type of a command name",{},
         [Manager](const std::vector<std::string>& args) {
             if (args.size() != 1) { std::cout << "Usage: type <commandName>" << std::endl; return; }
-            const std::string searchedCmdName = args.at(0);
+            const std::string& searchedCmdName = args.at(0);
 
             try {
                 if(Manager.getBuiltinCommand(searchedCmdName) == nullptr) {
