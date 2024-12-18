@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include <unistd.h>
+#include <bits/ranges_algo.h>
 #include <sys/stat.h>
 
 #include "FileSearcher.h"
@@ -52,17 +53,18 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
     Manager.registerCommand(Command("cd", "Change current working directory",
         {},
         [](const std::vector<std::string>& args) {
+            std::string targetPath = args.at(0); // create a modifiable copy
+            const auto pos = targetPath.find('~'); // handle user home path
+               if(pos != std::string::npos) {
+                   targetPath.replace(pos,1,getenv("HOME"));
+               }
+
            struct stat statStruct{};
            // If the file/directory exists at the path returns 0
-           if (stat(args.at(0).c_str(), &statStruct) != 0) {
-               auto pos = args.at(0).find('~');
-               if(pos != std::string::npos) {
-                   std::string substitiutedPath = args.at(0);
-                   substitiutedPath.replace(pos,1,getenv("HOME"));
-                   chdir(substitiutedPath.c_str());
-               }else {
-                   std::cout << "cd: " << args[0]<< ": No such file or directory" << std::endl; return;
-               }
+           if (stat(targetPath.c_str(), &statStruct) == 0) {
+               chdir(targetPath.c_str());
+           }else {
+                   std::cout << "cd: " << targetPath<< ": No such file or directory" << std::endl; return;
            }
         }, [](const std::vector<std::string>& args) {
             if(args.empty()) return false;
