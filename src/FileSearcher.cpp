@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <ostream>
+#include <sys/stat.h>
 
 void FileSearcher::addPathDirsFilesToList() {
     const std::string BigPath = getenv("PATH");

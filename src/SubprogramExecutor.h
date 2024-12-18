@@ -1,12 +1,8 @@
 #ifndef SUBPROGRAMEXECUTOR_H
 #define SUBPROGRAMEXECUTOR_H
 
-#include <unistd.h> // Für fork, exec
-#include <sys/types.h>
-#include <sys/wait.h> // Für waitpid
 #include <string>
 #include <vector>
-#include <stdexcept>
 #include <iostream>
 
 class SubprogramExecutor {

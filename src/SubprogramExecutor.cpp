@@ -1,6 +1,8 @@
 #include "SubprogramExecutor.h"
 
 #include <sstream>
+#include <unistd.h>
+#include <sys/wait.h>
 
 std::string SubprogramExecutor::execute(const std::string &path, const std::vector<std::string> &args) const {
     // Create an Argument-Array for exec
