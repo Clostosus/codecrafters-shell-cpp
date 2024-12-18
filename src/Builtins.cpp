@@ -55,9 +55,15 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
            struct stat statStruct{};
            // If the file/directory exists at the path returns 0
            if (stat(args.at(0).c_str(), &statStruct) != 0) {
-               std::cout << "cd: " << args[0]<< ": No such file or directory" << std::endl; return;
+               auto pos = args.at(0).find('~');
+               if(pos != std::string::npos) {
+                   std::string substitiutedPath = args.at(0);
+                   substitiutedPath.replace(pos,1,getenv("HOME"));
+                   chdir(substitiutedPath.c_str());
+               }else {
+                   std::cout << "cd: " << args[0]<< ": No such file or directory" << std::endl; return;
+               }
            }
-           chdir(args.at(0).c_str());
         }, [](const std::vector<std::string>& args) {
             if(args.empty()) return false;
             return true;
