@@ -28,7 +28,6 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
                     argStart = pos; insideSingleQuotes = true;
                 } else {
                     argEnd = pos; insideSingleQuotes = false;
-                    std::cout << arg << std::endl;
                     arguments.push_back(arg);
                     arg.clear();
                 }
@@ -38,7 +37,6 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
                         argStart = pos; insideWord = true;
                     }else {
                         argEnd = pos; insideWord = false;
-                        std::cout << arg << std::endl;
                         arguments.push_back(arg);
                         arg.clear();
                     }
@@ -49,7 +47,6 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
                 arg.push_back(c);
             }
         }
-        std::cout << arg << " contains single Quote"<< std::endl;
     }else {
         std::stringstream inputStream(input.substr(input.find(' ') + 1));// +1 um führendes ' ' zu ignorieren
         while(getline(inputStream, arg,' ')) {
