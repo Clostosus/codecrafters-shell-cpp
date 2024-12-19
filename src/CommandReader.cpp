@@ -16,7 +16,7 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
     // Argumente extrahieren
     std::string arg;
 
-    if(input.contains('\'')) {// Process args if one arg contains '
+    //if(input.contains('\'')) {// Process args if one arg contains '
         std::string::iterator pos = input.begin(), argStart = input.begin(),argEnd = input.end();
         while (*pos != '\'' && *pos != ' ') { pos++; }
         pos++; // Leerzeichen nach cmdName ignorieren
@@ -34,9 +34,12 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
             }else if(c == ' ') {
                 if(!insideSingleQuotes) {
                     if(!insideWord) {
-                        argStart = pos; insideWord = true;
+                        if(pos != input.end() && *(pos+1).base() != ' ') {
+                            argStart = pos+1; insideWord = true;
+                        } else { continue; }
                     }else {
                         argEnd = pos; insideWord = false;
+                        std::cout << arg << std::endl;
                         arguments.push_back(arg);
                         arg.clear();
                     }
@@ -44,14 +47,9 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
                     arg.push_back(c);
                 }
             } else {
-                arg.push_back(c);
+                if(c != '\0') arg.push_back(c);
             }
         }
-    }else {
-        std::stringstream inputStream(input.substr(input.find(' ') + 1));// +1 um führendes ' ' zu ignorieren
-        while(getline(inputStream, arg,' ')) {
-            arguments.push_back(arg);
-        }
-    }
+    //}
 }
 
