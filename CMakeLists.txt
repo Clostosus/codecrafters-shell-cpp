@@ -17,4 +17,6 @@ add_executable(shell ${SOURCE_FILES}
         src/SubprogramExecutor.h
         src/Builtins.cpp
         src/Builtins.h
+        src/CommandReader.cpp
+        src/CommandReader.h
 )
