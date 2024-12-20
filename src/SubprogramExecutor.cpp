@@ -4,20 +4,18 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-std::string SubprogramExecutor::execute(const std::string &path, const std::vector<std::string> &args) const {
+std::string SubprogramExecutor::execute(std::string path, std::vector<std::string> args) const {
     // Create an Argument-Array for exec
-    std::vector<char *> execArgs;
-    execArgs.push_back(const_cast<char *>(path.c_str())); // Program name
-    for (const auto &arg : args) {
-        execArgs.push_back(const_cast<char *>(arg.c_str()));
+    std::vector<char*> execArgv;
+    execArgv.push_back(path.data()); // Program name
+    for (int i=0; i<args.size() -1; i++) {
+        execArgv.push_back(args.at(i).data());
     }
-    execArgs.push_back(nullptr); // Null-terminated
+     execArgv.push_back(nullptr); // Null-terminated
 
     // create Pipe "stringstream"
     int pipefd[2];
-    if (pipe(pipefd) == -1) {
-        throw std::runtime_error("Failed to create pipe");
-    }
+    if (pipe(pipefd) == -1) { throw std::runtime_error("Failed to create pipe"); }
 
     // Forks the current process
     pid_t pid = fork();
@@ -25,12 +23,10 @@ std::string SubprogramExecutor::execute(const std::string &path, const std::vect
         close(pipefd[0]); // close pipe reading end
 
         //  (stdout -> pipe write-end)
-        if (dup2(pipefd[1], STDOUT_FILENO) == -1) {
-            perror("dup2 failed"); _exit(EXIT_FAILURE);
-        }
+        if (dup2(pipefd[1], STDOUT_FILENO) == -1) { perror("dup2 failed"); _exit(EXIT_FAILURE); }
         close(pipefd[1]); // close Pipe writing end
 
-        execvp(path.c_str(), execArgs.data());
+        execvp(path.c_str(), execArgv.data());
         // execvp only reaches this line on failure
         perror("execvp failed");
         _exit(EXIT_FAILURE);

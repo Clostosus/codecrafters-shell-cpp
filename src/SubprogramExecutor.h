@@ -11,7 +11,7 @@ public:
     SubprogramExecutor()=default;
     ~SubprogramExecutor()=default;
     // Executes a Subprogram with Arguments and waits until completion
-    [[nodiscard]] std::string execute(const std::string &path, const std::vector<std::string> &args) const;
+    [[nodiscard]] std::string execute(std::string path,std::vector<std::string> args) const;
 };
 
 

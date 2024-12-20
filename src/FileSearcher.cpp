@@ -54,3 +54,10 @@ void FileSearcher::printFilenames() const {
         std::cout << filename << std::endl;
     }
 }
+
+std::string FileSearcher::getHomedir() {
+    const std::string Home = getenv("HOME");
+    if (Home.empty()) { throw FileNotFoundException("HOME not set"); }
+    return Home;
+}
+

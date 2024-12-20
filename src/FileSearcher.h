@@ -16,6 +16,7 @@ public:
     ~FileSearcher()=default;
     std::string getPathToFile(const std::string &filename);
     void printFilenames() const;
+    static std::string getHomedir();
 
     class FileNotFoundException final : public std::runtime_error{
         public:

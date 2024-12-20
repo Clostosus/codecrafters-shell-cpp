@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include "CommandManager.h"
+
+#include "ArgumentsParser.h"
 #include "SubprogramExecutor.h"
 #include "FileSearcher.h"
 
@@ -17,7 +19,7 @@ const Command* CommandManager::getBuiltinCommand(const std::string& name) const 
     return nullptr; // Kein Command mit diesem Namen gefunden
 }
 
-void CommandManager::executeCommand(const std::string& name, const std::vector<std::string>& arguments) const {
+void CommandManager::executeCommand(const std::string& name, std::vector<std::string>& arguments) const {
     const Command* cmd = getBuiltinCommand(name);
     if (cmd != nullptr) {
         if (cmd->validateArguments(arguments)) {

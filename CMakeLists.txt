@@ -19,4 +19,6 @@ add_executable(shell ${SOURCE_FILES}
         src/Builtins.h
         src/CommandReader.cpp
         src/CommandReader.h
+        src/ArgumentsParser.cpp
+        src/ArgumentsParser.h
 )
