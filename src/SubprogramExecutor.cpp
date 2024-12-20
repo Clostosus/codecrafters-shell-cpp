@@ -8,9 +8,11 @@ std::string SubprogramExecutor::execute(std::string path, std::vector<std::strin
     // Create an Argument-Array for exec
     std::vector<char*> execArgv;
     execArgv.push_back(path.data()); // Program name
-    for (int i=0; i<args.size() -1; i++) {
-        if(!args.at(i).empty()) {
-            execArgv.push_back(args.at(i).data());
+    if (!args.empty()) {
+        for (int i=0; i<args.size() -1; i++) {
+            if(!args.at(i).empty()) {
+                execArgv.push_back(args.at(i).data());
+            }
         }
     }
      execArgv.push_back(nullptr); // Null-terminated
