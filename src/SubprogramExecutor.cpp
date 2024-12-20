@@ -9,7 +9,7 @@ std::string SubprogramExecutor::execute(std::string path, std::vector<std::strin
     std::vector<char*> execArgv;
     execArgv.push_back(path.data()); // Program name
     if (!args.empty()) {
-        for (int i=0; i<args.size() -1; i++) {
+        for (int i=0; i<args.size(); i++) {
             if(!args.at(i).empty()) {
                 execArgv.push_back(args.at(i).data());
             }
