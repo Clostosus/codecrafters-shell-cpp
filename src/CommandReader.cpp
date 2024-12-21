@@ -28,40 +28,6 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
                 arguments.push_back(arg);
                 arg.clear();
             }
-            /*if(c == '\'') {
-                if(!insideSingleQuotes) {
-                    argStart = pos; insideSingleQuotes = true;
-                } else {
-                    argEnd = pos; insideSingleQuotes = false;
-                    if(!arg.empty()) {
-                        arguments.push_back(arg);
-                        arg.clear();
-                    }
-                }
-            }else if(c == ' ') {
-                if(!insideSingleQuotes) {
-                    if(insideWord) {
-                        argEnd = pos; insideWord = false;
-                        if(!arg.empty()) {
-                            arguments.push_back(arg);
-                            arg.clear();
-                        }
-                    }else {
-                        if(pos != input.end() && *(pos+1).base() != ' ') {
-                            argStart = pos+1; insideWord = true;
-                        } else { continue; }
-                    }
-                } else {
-                    arg.push_back(c);
-                }
-            } else {
-                if(!insideWord){insideWord = true;}
-                if(c != '\0') {arg.push_back(c); } else {
-                    if(!arg.empty()) {
-                        arguments.push_back(arg);
-                    }
-                }
-            }*/
     }
 }
 
