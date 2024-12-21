@@ -5,10 +5,15 @@
 
 
 class CommandReader {
+private:
+   enum ParserState {OutsideArgument, InsideWord, InsideSingleQuotes, InsideDoubleQuotes};
+   ParserState currentState;
+   void handleStateTransition(char currentChar, std::string& currentArgument);
    public:
    CommandReader();
    // Reads a line from stdin, fills Arguments vector and assigns cmdName, handles escape characters
-   static void readOneLine(std::string & cmdName, std::vector<std::string> & arguments);
+   void readOneLine(std::string & cmdName, std::vector<std::string> & arguments);
+
 };
 
 

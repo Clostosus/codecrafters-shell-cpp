@@ -1,3 +1,4 @@
+// ReSharper disable CppRedundantElseKeywordInsideCompoundStatement
 #include "SubprogramExecutor.h"
 
 #include <sstream>

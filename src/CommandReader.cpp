@@ -4,38 +4,48 @@
 #include <iostream>
 #include <sstream>
 
-CommandReader::CommandReader() = default;
+CommandReader::CommandReader() {
+    currentState = ParserState::OutsideArgument;
+};
 
 void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &arguments) {
     arguments.clear();
     std::string input;
     std::getline(std::cin, input);
-    // Command-Name extrahieren
-    cmdName = input.substr(0, input.find(' '));
+    cmdName = input.substr(0, input.find(' ')); // Command-Name extrahieren
 
     // Argumente extrahieren
     std::string arg;
 
-        std::string::iterator pos = input.begin(), argStart = input.begin(),argEnd = input.end();
+        std::string::iterator pos = input.begin(); // argStart = input.begin(),argEnd = input.end();
         while (*pos != '\'' && *pos != ' ') { pos++; }
         pos++; // Leerzeichen nach cmdName ignorieren
         bool insideSingleQuotes = false, insideWord = false;
-        for (pos ; pos <= input.end(); pos++) {
+        for (pos ; pos <= input.end()+1; pos++) {
             char c = *pos;
-            if(c == '\'') {
+            this->handleStateTransition(c,arg);
+            if (currentState == ParserState::OutsideArgument && !arg.empty()) {
+                arguments.push_back(arg);
+                arg.clear();
+            }
+            /*if(c == '\'') {
                 if(!insideSingleQuotes) {
                     argStart = pos; insideSingleQuotes = true;
                 } else {
                     argEnd = pos; insideSingleQuotes = false;
-                    arguments.push_back(arg);
-                    arg.clear();
+                    if(!arg.empty()) {
+                        arguments.push_back(arg);
+                        arg.clear();
+                    }
                 }
             }else if(c == ' ') {
                 if(!insideSingleQuotes) {
                     if(insideWord) {
                         argEnd = pos; insideWord = false;
-                        arguments.push_back(arg);
-                        arg.clear();
+                        if(!arg.empty()) {
+                            arguments.push_back(arg);
+                            arg.clear();
+                        }
                     }else {
                         if(pos != input.end() && *(pos+1).base() != ' ') {
                             argStart = pos+1; insideWord = true;
@@ -47,9 +57,47 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
             } else {
                 if(!insideWord){insideWord = true;}
                 if(c != '\0') {arg.push_back(c); } else {
-                    arguments.push_back(arg);
+                    if(!arg.empty()) {
+                        arguments.push_back(arg);
+                    }
                 }
-            }
+            }*/
     }
 }
 
+void CommandReader::handleStateTransition(char currentChar, std::string &currentArgument) {
+    switch (currentState) {
+      case ParserState::InsideSingleQuotes:
+          if(currentChar == '\'') {
+              currentState = ParserState::OutsideArgument;
+          } else {
+              currentArgument.push_back(currentChar);
+          }
+          break;
+        case ParserState::InsideWord:
+            if (currentChar == ' ') {
+                // Argument abgeschlossen
+                currentState = ParserState::OutsideArgument;
+            } else if (currentChar == '\'') {
+                // Wechsel in Single Quotes innerhalb eines Arguments
+                currentState = ParserState::InsideSingleQuotes;
+            } else if(currentChar == '\0') {
+                currentState = ParserState::OutsideArgument;
+            } else{
+                currentArgument.push_back(currentChar);
+            }
+            break;
+        case ParserState::OutsideArgument:
+            if (currentChar == '\'') {
+                currentState = ParserState::InsideSingleQuotes;
+            } else if (currentChar == '\0') {
+
+            } else if(currentChar != ' ') {
+                currentArgument.push_back(currentChar);
+                currentState = ParserState::InsideWord;
+            }
+            break;
+        default:
+            throw std::runtime_error("Unknown Parser-State");
+    }
+}

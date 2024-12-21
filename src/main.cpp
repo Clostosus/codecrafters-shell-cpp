@@ -21,7 +21,8 @@ int main() {
         try {
             std::string commandName;
             std::vector<std::string> arguments;
-            CommandReader::readOneLine(commandName,arguments);
+            CommandReader reader;
+            reader.readOneLine(commandName,arguments);
             if (!commandName.empty()) { manager.executeCommand(commandName, arguments); }
         } catch (const CommandManager::CommandNotFoundException& e) {
             std::cout << e.what() << std::endl;
