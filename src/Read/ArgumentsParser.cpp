@@ -1,6 +1,6 @@
 #include "ArgumentsParser.h"
 
-#include "FileSearcher.h"
+#include "../Process/FileSearcher.h"
 
 void ArgumentsParser::replaceHomedirSymbols(std::vector<std::string> & arguments) {
     const std::string homedir = FileSearcher::getHomedir();
