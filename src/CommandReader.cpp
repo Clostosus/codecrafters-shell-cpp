@@ -77,15 +77,9 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
             }
             break;
         case ParserState::InsideDoubleQuotes:
-            if(currentChar == '\"') {
-                currentState = ParserState::OutsideArgument;
-            } else if(currentChar == '\\') {
-                //if(nextChar != ' ') {
-                    escapedNextChar = true;
-                //}else { currentArgument.push_back('\\'); }
-            } else {
-                currentArgument.push_back(currentChar);
-            }
+            if(currentChar == '\\') { escapedNextChar = true; }
+            else if(currentChar == '\"') { currentState = ParserState::OutsideArgument; }
+            else { currentArgument.push_back(currentChar); }
             break;
         default:
             throw std::runtime_error("Unknown Parser-State");
