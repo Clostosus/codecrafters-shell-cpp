@@ -35,7 +35,7 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
     ));
     Manager.registerCommand(Command(
         "echo", "Prints the input", {},
-        [](const std::vector<std::string>& args) { for (int i=0;i<args.size()-1;i++) { std::cout << args.at(i) << ' ';}
+        [](const std::vector<std::string>& args) { for (int i=0;i<args.size()-1;i++) { std::cout << args.at(i);}
             std::cout << args.at(args.size()-1)<< std::endl; },
         [](const std::vector<std::string>& args) {
             return !args.empty();
