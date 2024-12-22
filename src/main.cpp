@@ -1,11 +1,11 @@
 #include <iostream>
 #include <sstream>
 
-#include "Process/Command.h"
-#include "Process/CommandManager.h"
-#include "Process/FileSearcher.h"
-#include "Process/Builtins.h"
-#include "Read/CommandReader.h"
+#include "Command.h"
+#include "CommandManager.h"
+#include "FileSearcher.h"
+#include "Builtins.h"
+#include "CommandReader.h"
 
 
 int main() {
