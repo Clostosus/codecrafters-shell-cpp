@@ -56,8 +56,6 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
                 currentState = ParserState::InsideSingleQuotes;
             } else if(currentChar == '\0') {
                 currentState = ParserState::OutsideArgument;
-            } else if(currentChar == '\\' ) {
-                escapedNextChar == true;
             } else {
                 currentArgument.push_back(currentChar);
             }
@@ -80,8 +78,10 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
             if(currentChar == '\"') {
                 currentState = ParserState::OutsideArgument;
             }else if(currentChar == '\\') {
-                escapedNextChar = true;
-                currentArgument.push_back(nextChar);
+                if(nextChar != ' ') {
+                    escapedNextChar = true;
+                    currentArgument.push_back(nextChar);
+                }else{currentArgument.push_back('\\');}
             } else {
                 currentArgument.push_back(currentChar);
             }
