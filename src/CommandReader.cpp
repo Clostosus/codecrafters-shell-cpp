@@ -19,23 +19,22 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
     arguments.clear();
     std::string input;
     std::getline(std::cin, input);
-    cmdName = input.substr(0, input.find(SPACE)); // Command-Name extrahieren
 
     // Argumente extrahieren
     std::string arg;
-
         std::string::iterator pos = input.begin(); // argStart = input.begin(),argEnd = input.end();
-        while (*pos != SPACE) { pos++; }
-        pos++; // Leerzeichen nach cmdName ignorieren
         bool insideSingleQuotes = false, insideWord = false;
-        for (pos ; pos <= input.end()+1; pos++) {
-            char c = *pos, nextChar = *(pos+1);
-            this->handleStateTransition(c,nextChar,arg);
-            if (currentState == ParserState::OutsideArgument && !arg.empty()) {
-                arguments.push_back(arg);
-                arg.clear();
-            }
+
+    for (pos ; pos <= input.end()+1; pos++) {
+        char c = *pos, nextChar = *(pos+1);
+        this->handleStateTransition(c,nextChar,arg);
+        if (currentState == ParserState::OutsideArgument && !arg.empty()) {
+             arguments.push_back(arg);
+             arg.clear();
         }
+    }
+    cmdName = arguments.front();
+    arguments.erase(arguments.begin());
 }
 
 void CommandReader::handleStateTransition(char currentChar, char nextChar, std::string &currentArgument) {
