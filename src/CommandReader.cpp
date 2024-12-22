@@ -22,16 +22,16 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
         pos++; // Leerzeichen nach cmdName ignorieren
         bool insideSingleQuotes = false, insideWord = false;
         for (pos ; pos <= input.end()+1; pos++) {
-            char c = *pos;
-            this->handleStateTransition(c,arg);
+            char c = *pos, nextChar = *(pos+1);
+            this->handleStateTransition(c,nextChar,arg);
             if (currentState == ParserState::OutsideArgument && !arg.empty()) {
                 arguments.push_back(arg);
                 arg.clear();
             }
-    }
+        }
 }
 
-void CommandReader::handleStateTransition(char currentChar, std::string &currentArgument) {
+void CommandReader::handleStateTransition(char currentChar, char nextChar, std::string &currentArgument) {
     switch (currentState) {
       case ParserState::InsideSingleQuotes:
           if(currentChar == '\'') {
@@ -42,14 +42,15 @@ void CommandReader::handleStateTransition(char currentChar, std::string &current
           break;
         case ParserState::InsideWord:
             if (currentChar == ' ') {
-                // Argument abgeschlossen
-                currentState = ParserState::OutsideArgument;
+                if(nextChar != '\\') currentState = ParserState::OutsideArgument;// Argument finished
             } else if (currentChar == '\'') {
                 // Wechsel in Single Quotes innerhalb eines Arguments
                 currentState = ParserState::InsideSingleQuotes;
             } else if(currentChar == '\0') {
                 currentState = ParserState::OutsideArgument;
-            } else{
+            } else if(currentChar == '\\' && nextChar == ' ') {
+                currentArgument.push_back(' ');
+            } else {
                 currentArgument.push_back(currentChar);
             }
             break;
@@ -63,6 +64,8 @@ void CommandReader::handleStateTransition(char currentChar, std::string &current
             } else if(currentChar != ' ' && currentChar!= '\\') {
                 currentArgument.push_back(currentChar);
                 currentState = ParserState::InsideWord;
+            }else if(currentChar == '\\' && nextChar == ' ') {
+                currentArgument.push_back(' ');
             }
             break;
         case ParserState::InsideDoubleQuotes:
