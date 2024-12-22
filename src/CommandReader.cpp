@@ -86,7 +86,7 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
             break;
         case ParserState::InsideDoubleQuotes:
             if(currentChar == BACKSLASH) {
-                if(nextChar == BACKSLASH || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE) {escapedNextChar = true;}
+                if(nextChar == BACKSLASH || nextChar == '$' || nextChar == DOUBLE) {escapedNextChar = true;}
                 else{currentArgument.push_back(currentChar);}
             }
             else if(currentChar == DOUBLE) { currentState = ParserState::OutsideArgument; }
