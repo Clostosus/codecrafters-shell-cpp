@@ -7,7 +7,7 @@
 #define END '\0'
 #define SPACE ' '
 #define SINGLE '\''
-#define DOUBLE '\"'
+#define DOUBLE '"'
 #define BACKSLASH '\\'
 
 CommandReader::CommandReader() {
