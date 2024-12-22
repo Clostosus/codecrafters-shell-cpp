@@ -60,7 +60,7 @@ void CommandReader::handleStateTransition(char currentChar, std::string &current
 
             } else if (currentChar == '\"') {
                 currentState = ParserState::InsideDoubleQuotes;
-            } else if(currentChar != ' ') {
+            } else if(currentChar != ' ' && currentChar!= '\\') {
                 currentArgument.push_back(currentChar);
                 currentState = ParserState::InsideWord;
             }
