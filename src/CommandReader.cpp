@@ -4,6 +4,12 @@
 #include <iostream>
 #include <sstream>
 
+#define END '\0'
+#define SPACE ' '
+#define SINGLE '\''
+#define DOUBLE '\"'
+#define BACKSLASH '\\'
+
 CommandReader::CommandReader() {
     currentState = ParserState::OutsideArgument;
     escapedNextChar = false;
@@ -19,7 +25,7 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
     std::string arg;
 
         std::string::iterator pos = input.begin(); // argStart = input.begin(),argEnd = input.end();
-        while (*pos != '\'' && *pos != ' ') { pos++; }
+        while (*pos != SINGLE && *pos != ' ') { pos++; }
         pos++; // Leerzeichen nach cmdName ignorieren
         bool insideSingleQuotes = false, insideWord = false;
         for (pos ; pos <= input.end()+1; pos++) {
@@ -42,7 +48,7 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
 
     switch (currentState) {
       case ParserState::InsideSingleQuotes:
-          if(currentChar == '\'') {
+          if(currentChar == SINGLE) {
               currentState = ParserState::OutsideArgument;
           } else {
               currentArgument.push_back(currentChar);
@@ -51,27 +57,27 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
         case ParserState::InsideWord:
             if (currentChar == ' ') {
                 if(nextChar != '\\') currentState = ParserState::OutsideArgument;// Argument finished
-            } else if (currentChar == '\'') {
+            } else if (currentChar == SINGLE) {
                 // Wechsel in Single Quotes innerhalb eines Arguments
                 currentState = ParserState::InsideSingleQuotes;
             } else if(currentChar == '\0') {
                 currentState = ParserState::OutsideArgument;
             }else if (currentChar == '\\') {
-                if(nextChar == '\\' || nextChar == '$' || nextChar == '\'' || nextChar == '\"') {escapedNextChar = true;}
+                if(nextChar == '\\' || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE) {escapedNextChar = true;}
                 else{currentArgument.push_back(currentChar);}
             } else {
                 currentArgument.push_back(currentChar);
             }
             break;
         case ParserState::OutsideArgument:
-            if (currentChar == '\'') {
+            if (currentChar == SINGLE) {
                 currentState = ParserState::InsideSingleQuotes;
             } else if (currentChar == '\0') {
 
-            } else if (currentChar == '\"') {
+            } else if (currentChar == DOUBLE) {
                 currentState = ParserState::InsideDoubleQuotes;
             } else if(currentChar == '\\') {
-                if(nextChar == '\\' || nextChar == '$' || nextChar == '\'' || nextChar == '\"') {escapedNextChar = true;}
+                if(nextChar == '\\' || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE) {escapedNextChar = true;}
                 else{currentArgument.push_back(currentChar);}
             }else if(currentChar != ' ' && currentChar!= '\\') {
                 currentArgument.push_back(currentChar);
@@ -79,11 +85,11 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
             }
             break;
         case ParserState::InsideDoubleQuotes:
-            if(currentChar == '\\') {
-                if(nextChar == '\\' || nextChar == '$' || nextChar == '\'' || nextChar == '\"') {escapedNextChar = true;}
+            if(currentChar == BACKSLASH) {
+                if(nextChar == BACKSLASH || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE) {escapedNextChar = true;}
                 else{currentArgument.push_back(currentChar);}
             }
-            else if(currentChar == '\"') { currentState = ParserState::OutsideArgument; }
+            else if(currentChar == DOUBLE) { currentState = ParserState::OutsideArgument; }
             else { currentArgument.push_back(currentChar); }
             break;
         default:
