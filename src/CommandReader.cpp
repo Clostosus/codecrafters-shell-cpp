@@ -79,11 +79,11 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
         case ParserState::InsideDoubleQuotes:
             if(currentChar == '\"') {
                 currentState = ParserState::OutsideArgument;
-            }else if(currentChar == '\\') {
+            }/*else if(currentChar == '\\') {
                 if(nextChar != ' ') {
                     escapedNextChar = true;
                 }else{currentArgument.push_back('\\');}
-            } else {
+            }*/ else {
                 currentArgument.push_back(currentChar);
             }
             break;
