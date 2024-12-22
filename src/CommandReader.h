@@ -8,6 +8,7 @@ class CommandReader {
 private:
    enum ParserState {OutsideArgument, InsideWord, InsideSingleQuotes, InsideDoubleQuotes};
    ParserState currentState;
+   bool escapedNextChar;
    void handleStateTransition(char currentChar, char nextChar, std::string& currentArgument);
    public:
    CommandReader();

@@ -6,6 +6,7 @@
 
 CommandReader::CommandReader() {
     currentState = ParserState::OutsideArgument;
+    escapedNextChar = false;
 };
 
 void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &arguments) {
@@ -32,6 +33,13 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
 }
 
 void CommandReader::handleStateTransition(char currentChar, char nextChar, std::string &currentArgument) {
+    if(currentState != ParserState::InsideSingleQuotes) {
+        if(escapedNextChar) {
+            escapedNextChar = false; currentArgument.push_back(currentChar);
+            return;
+        }
+    }
+
     switch (currentState) {
       case ParserState::InsideSingleQuotes:
           if(currentChar == '\'') {
@@ -48,8 +56,8 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
                 currentState = ParserState::InsideSingleQuotes;
             } else if(currentChar == '\0') {
                 currentState = ParserState::OutsideArgument;
-            } else if(currentChar == '\\' && nextChar == ' ') {
-                currentArgument.push_back(' ');
+            } else if(currentChar == '\\' ) {
+                escapedNextChar == true;
             } else {
                 currentArgument.push_back(currentChar);
             }
@@ -64,15 +72,16 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
             } else if(currentChar != ' ' && currentChar!= '\\') {
                 currentArgument.push_back(currentChar);
                 currentState = ParserState::InsideWord;
-            }else if(currentChar == '\\' && nextChar == ' ') {
-                currentArgument.push_back(' ');
+            }else if(currentChar == '\\') {
+                escapedNextChar = true;
             }
             break;
         case ParserState::InsideDoubleQuotes:
             if(currentChar == '\"') {
                 currentState = ParserState::OutsideArgument;
             }else if(currentChar == '\\') {
-                currentArgument.push_back(currentChar);
+                escapedNextChar = true;
+                currentArgument.push_back(nextChar);
             } else {
                 currentArgument.push_back(currentChar);
             }
