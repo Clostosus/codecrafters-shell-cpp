@@ -63,7 +63,7 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
             } else if(currentChar == '\0') {
                 currentState = ParserState::OutsideArgument;
             }else if (currentChar == '\\') {
-                if(nextChar == '\\' || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE) {escapedNextChar = true;}
+                if(nextChar == '\\' || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE || nextChar == ' ') {escapedNextChar = true;}
                 else{currentArgument.push_back(currentChar);}
             } else {
                 currentArgument.push_back(currentChar);
@@ -77,7 +77,7 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
             } else if (currentChar == DOUBLE) {
                 currentState = ParserState::InsideDoubleQuotes;
             } else if(currentChar == '\\') {
-                if(nextChar == '\\' || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE) {escapedNextChar = true;}
+                if(nextChar == '\\' || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE || nextChar == ' ') {escapedNextChar = true;}
                 else{currentArgument.push_back(currentChar);}
             }else if(currentChar != ' ' && currentChar!= '\\') {
                 currentArgument.push_back(currentChar);
