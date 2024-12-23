@@ -32,14 +32,12 @@ void CommandManager::executeCommand(const std::string& name, const std::vector<s
         try {
             FileSearcher searcher;
             pathToFile = searcher.getPathToFile(name);
-        } catch (FileSearcher::FileNotFoundException &fileNotFoundError) {
-            throw CommandNotFoundException(name);
-        }
+        } catch (FileSearcher::FileNotFoundException &fileNotFoundError) { throw CommandNotFoundException(name); }
 
         try {
             SubprogramExecutor executor(pathToFile,arguments);
             const std::string result = executor.execute();
-             if(!result.empty()){std::cout << result << std::endl;}
+             if(!result.empty()){std::cout << result;}
         } catch (const std::runtime_error &e) {
             std::cout << "Error while executing command: " << pathToFile << std::endl << e.what() << std::endl;
         }
