@@ -43,32 +43,40 @@ std::string SubprogramExecutor::execute(){
 
 std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & execArgv) const {
     // create Pipe "stringstream"
-    int pipefd[2];
-    if (pipe(pipefd) == -1) { throw std::runtime_error("Failed to create pipe"); }
+    int stdoutPipe[2],stderrPipe[2];
+    if (pipe(stdoutPipe) == -1 || pipe(stderrPipe) == -1) { throw std::runtime_error("Failed to create pipe"); }
 
     // Forks the current process
     pid_t pid = fork();
     if(pid == 0) { // child process
-        close(pipefd[0]); // close pipe reading end
+        close(stdoutPipe[0]); close(stderrPipe[0]);// close pipes reading end
 
-        //  (stdout -> pipe write-end)
-        if (dup2(pipefd[1], STDOUT_FILENO) == -1) { perror("dup2 failed"); _exit(EXIT_FAILURE); }
-        close(pipefd[1]); // close Pipe writing end
+        //  (stdout -> stdoutPipe, stderr -> stderrPipe)
+        if (dup2(stdoutPipe[1], STDOUT_FILENO) == -1 || dup2(stderrPipe[1], STDERR_FILENO) == -1) {
+            perror("dup2 failed"); _exit(EXIT_FAILURE);
+        }
+        close(stdoutPipe[1]); close(stderrPipe[1]);// close Pipe writing end
 
         execvp(pathToCmd.c_str(), execArgv.data());
         // execvp only reaches this line on failure
         perror("execvp failed");
         _exit(EXIT_FAILURE);
     } else if(pid > 0) { // parent process
-        close(pipefd[1]); // close Writing end of pipe
+        close(stdoutPipe[1]); close(stderrPipe[1]);// close Writing end of pipe
         // Read subprogram output
-        std::ostringstream output;
+        std::ostringstream stdoutOutput, stderrOutput;
         char buffer[1024];
         ssize_t bytesRead;
-        while ((bytesRead = read(pipefd[0], buffer, sizeof(buffer))) > 0) {
-            output.write(buffer, bytesRead);
+        while ((bytesRead = read(stdoutPipe[0], buffer, sizeof(buffer))) > 0) {
+            stdoutOutput.write(buffer, bytesRead);
         }
-        close(pipefd[0]); // close Pipe Reading end
+        close(stdoutPipe[0]); // close Pipe Reading end
+
+        // Read stderr
+        while ((bytesRead = read(stderrPipe[0], buffer, sizeof(buffer))) > 0) {
+            stderrOutput.write(buffer, bytesRead);
+        }
+        close(stderrPipe[0]);
 
         int status;
         waitpid(pid, &status, 0); // wait for child process to finish
@@ -79,7 +87,7 @@ std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & ex
         } else if (WIFSIGNALED(status)) {
             throw SubprogramExecutorException("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
         }
-        std::string result = output.str();
+        std::string result = stdoutOutput.str();
         return result;
     } else { // fork failed
         throw std::runtime_error("Failed to fork process");
@@ -87,13 +95,60 @@ std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & ex
 }
 
 void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFile) const {
-     auto output = std::ostringstream(executeNoRedirect(execArgv));
      std::fstream file;
      file.open(pathToRedirectFile, std::ios_base::out);
      if(!file.fail()) {
-         file.write(output.str().c_str(), static_cast<long>(output.str().size()));
-     }
 
+         // create Pipe "stringstream"
+    int stdoutPipe[2],stderrPipe[2];
+    if (pipe(stdoutPipe) == -1 || pipe(stderrPipe) == -1) { throw std::runtime_error("Failed to create pipe"); }
+
+    // Forks the current process
+    pid_t pid = fork();
+    if(pid == 0) { // child process
+        close(stdoutPipe[0]); close(stderrPipe[0]);// close pipes reading end
+
+        //  (stdout -> stdoutPipe, stderr -> stderrPipe)
+        if (dup2(stdoutPipe[1], STDOUT_FILENO) == -1 || dup2(stderrPipe[1], STDERR_FILENO) == -1) {
+            perror("dup2 failed"); _exit(EXIT_FAILURE);
+        }
+        close(stdoutPipe[1]); close(stderrPipe[1]);// close Pipe writing end
+
+        execvp(pathToCmd.c_str(), execArgv.data());
+        // execvp only reaches this line on failure
+        perror("execvp failed");
+        _exit(EXIT_FAILURE);
+    } else if(pid > 0) { // parent process
+        close(stdoutPipe[1]); close(stderrPipe[1]);// close Writing end of pipe
+        // Read subprogram output
+        std::ostringstream stderrOutput;
+        char buffer[1024];
+        ssize_t bytesRead;
+        while ((bytesRead = read(stdoutPipe[0], buffer, sizeof(buffer))) > 0) {
+            file.write(buffer, bytesRead);  // Schreibe direkt in die Datei
+        }
+        close(stdoutPipe[0]); // close Pipe Reading end
+
+        // Read stderr
+        while ((bytesRead = read(stderrPipe[0], buffer, sizeof(buffer))) > 0) {
+            stderrOutput.write(buffer, bytesRead);
+        }
+        close(stderrPipe[0]);
+
+        int status;
+        waitpid(pid, &status, 0); // wait for child process to finish
+        if (WIFEXITED(status)) {
+            if (WEXITSTATUS(status) != 0) {
+                throw SubprogramExecutorException("Subprogram exited with error code: " + std::to_string(WEXITSTATUS(status)));
+            }
+        } else if (WIFSIGNALED(status)) {
+            throw SubprogramExecutorException("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
+        }
+    } else { // fork failed
+        throw std::runtime_error("Failed to fork process");
+    }
+
+     }
      file.close();
 }
 
