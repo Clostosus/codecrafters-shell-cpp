@@ -30,7 +30,7 @@ std::string SubprogramExecutor::execute(){
     }
     if(redirectRequired) {
         executeWithRedirect(redirectPath);
-        return "Wrote output to " + redirectPath;
+        return "";
     }else {
         return executeNoRedirect(execArgv);
     }
