@@ -139,7 +139,8 @@ void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFi
         waitpid(pid, &status, 0); // wait for child process to finish
         if (WIFEXITED(status)) {
             if (WEXITSTATUS(status) != 0) {
-                throw SubprogramExecutorException("Subprogram exited with error code: " + std::to_string(WEXITSTATUS(status)));
+                // throw SubprogramExecutorException("Subprogram exited with error code: " + std::to_string(WEXITSTATUS(status)));
+                throw SubprogramExecutorException(stderrOutput.str());
             }
         } else if (WIFSIGNALED(status)) {
             throw SubprogramExecutorException("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
