@@ -40,7 +40,7 @@ void CommandManager::executeExternalBinary(const std::string& cmdName, const std
     } catch (FileSearcher::FileNotFoundException &fileNotFoundError) { throw CommandNotFoundException(cmdName); }
 
     try {
-        SubprogramExecutor executor(pathToFile,args);
+        SubprogramExecutor executor(cmdName,args);
         const std::string result = executor.execute();
         if(!result.empty()){std::cout << result;}
     } catch (const std::runtime_error &e) {
