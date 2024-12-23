@@ -26,15 +26,19 @@ protected:
     std::string name;
     std::string description;
     std::vector<std::string> argumentPrefixes;
-    std::function<void(const std::vector<std::string>& args)> execute;
+    std::function<std::string(const std::vector<std::string>& args)> execute;
     std::function<bool(const std::vector<std::string>&)> validate;
+
+    void executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string>& args) const;
 public:
-    Command(const std::string& name, const std::string& description, const std::vector<std::string>& arguments,
-     const std::function<void(const std::vector<std::string>& args)> &execute, const std::function<bool(const std::vector<std::string>&)> &validate );
-    Command(const std::string& name, const std::string& description, const std::function<void(const std::vector<std::string>& args)> &execute);
+    Command(const std::string &name, const std::string &description, const std::vector<std::string> &arguments,
+            const std::function<std::string(const std::vector<std::string> &args)> &execute,
+            const std::function<bool(const std::vector<std::string> &)> &validate);
+
+    Command(const std::string& name, const std::string& description, const std::function<std::string(const std::vector<std::string>& args)> &execute);
 
     [[nodiscard]] bool validateArguments(const std::vector<std::string>& args) const;
-    void executeCommand(const std::vector<std::string> &args) const;
+    void executeCommand(std::vector<std::string> &args) const;
 
     [[nodiscard]] std::string getName()const;
     [[nodiscard]] std::string getDescription()const;

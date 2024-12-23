@@ -88,9 +88,12 @@ std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & ex
 
 void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFile) const {
      auto output = std::ostringstream(executeNoRedirect(execArgv));
-     std::ofstream file;
-     file.open (pathToRedirectFile);
-     file.write(output.str().c_str(), output.str().size());
+     std::fstream file;
+     file.open(pathToRedirectFile, std::ios_base::out);
+     if(!file.fail()) {
+         file.write(output.str().c_str(), static_cast<long>(output.str().size()));
+     }
+
      file.close();
 }
 
