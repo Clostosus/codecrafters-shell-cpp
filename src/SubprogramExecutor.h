@@ -6,12 +6,17 @@
 #include <iostream>
 
 class SubprogramExecutor {
-
+private:
+    std::vector<std::string> args;
+    std::vector<char*> execArgv;
+    std::string pathToCmd;
+    [[nodiscard]] std::string executeNoRedirect(const std::vector<char *> & execArgv) const;
+    void executeWithRedirect(const std::string& pathToRedirectFile) const;
 public:
-    SubprogramExecutor()=default;
+    SubprogramExecutor(const std::string &path, const std::vector<std::string> &args);
     ~SubprogramExecutor()=default;
     // Executes a Subprogram with Arguments and waits until completion
-    [[nodiscard]] std::string execute(std::string path,std::vector<std::string> args) const;
+    [[nodiscard]] std::string execute();
 };
 
 

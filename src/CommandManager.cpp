@@ -19,7 +19,7 @@ const Command* CommandManager::getBuiltinCommand(const std::string& name) const 
     return nullptr; // Kein Command mit diesem Namen gefunden
 }
 
-void CommandManager::executeCommand(const std::string& name, std::vector<std::string>& arguments) const {
+void CommandManager::executeCommand(const std::string& name, const std::vector<std::string>& arguments) const {
     const Command* cmd = getBuiltinCommand(name);
     if (cmd != nullptr) {
         if (cmd->validateArguments(arguments)) {
@@ -37,8 +37,8 @@ void CommandManager::executeCommand(const std::string& name, std::vector<std::st
         }
 
         try {
-            const SubprogramExecutor executor;
-            std::cout <<  executor.execute(pathToFile, arguments);
+            SubprogramExecutor executor(pathToFile,arguments);
+            std::cout <<  executor.execute();
         } catch (const std::exception &e) {
             std::cout << "Error while executing command: " << pathToFile << std::endl << e.what() << std::endl;
         }

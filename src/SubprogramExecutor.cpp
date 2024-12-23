@@ -1,24 +1,42 @@
 // ReSharper disable CppRedundantElseKeywordInsideCompoundStatement
 #include "SubprogramExecutor.h"
 
+#include <complex>
+#include <fstream>
 #include <sstream>
 #include <unistd.h>
 #include <sys/wait.h>
 
-std::string SubprogramExecutor::execute(std::string path, std::vector<std::string> args) const {
-    // Create an Argument-Array for exec
-    std::vector<char*> execArgv;
-    execArgv.push_back(path.data()); // Program name
+SubprogramExecutor::SubprogramExecutor(const std::string &path, const std::vector<std::string> &args) {
+    this->args = args; this->pathToCmd = path;
+    execArgv = std::vector<char *>();
+}
+
+
+std::string SubprogramExecutor::execute(){
+    bool redirectRequired = false; std::string redirectPath;
+    execArgv.push_back(pathToCmd.data()); // Program name
     if (!args.empty()) {
-        for (int i=0; i<args.size(); i++) {
-            if(!args.at(i).empty()) {
-                execArgv.push_back(args.at(i).data());
+        int i = 0;
+        for (i=0; i < args.size(); i++) {
+            if(!redirectRequired) {
+                if(args.at(i) == ">"){redirectRequired = true;}
+                else if(!args.at(i).empty()) { execArgv.push_back(args.at(i).data()); }
+            }else {
+                redirectPath = args.at(i);
             }
         }
         execArgv.push_back(nullptr); // Null-terminated
     }
+    if(redirectRequired) {
+        executeWithRedirect(redirectPath);
+        return "Wrote output to " + redirectPath;
+    }else {
+        return executeNoRedirect(execArgv);
+    }
+}
 
-
+std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & execArgv) const {
     // create Pipe "stringstream"
     int pipefd[2];
     if (pipe(pipefd) == -1) { throw std::runtime_error("Failed to create pipe"); }
@@ -32,7 +50,7 @@ std::string SubprogramExecutor::execute(std::string path, std::vector<std::strin
         if (dup2(pipefd[1], STDOUT_FILENO) == -1) { perror("dup2 failed"); _exit(EXIT_FAILURE); }
         close(pipefd[1]); // close Pipe writing end
 
-        execvp(path.c_str(), execArgv.data());
+        execvp(pathToCmd.c_str(), execArgv.data());
         // execvp only reaches this line on failure
         perror("execvp failed");
         _exit(EXIT_FAILURE);
@@ -48,7 +66,7 @@ std::string SubprogramExecutor::execute(std::string path, std::vector<std::strin
         close(pipefd[0]); // close Pipe Reading end
 
         int status;
-        waitpid(pid, &status, 0);
+        waitpid(pid, &status, 0); // wait for child process to finish
         if (WIFEXITED(status)) {
             if (WEXITSTATUS(status) != 0) {
                 throw std::runtime_error("Subprogram exited with error code: " + std::to_string(WEXITSTATUS(status)));
@@ -60,5 +78,12 @@ std::string SubprogramExecutor::execute(std::string path, std::vector<std::strin
     } else { // fork failed
         throw std::runtime_error("Failed to fork process");
     }
-    return "";
+}
+
+void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFile) const {
+     auto output = std::ostringstream(executeNoRedirect(execArgv));
+     std::ofstream file;
+     file.open (pathToRedirectFile);
+     file.write(output.str().c_str(), output.str().size());
+     file.close();
 }

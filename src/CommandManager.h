@@ -17,7 +17,7 @@ class CommandManager {
     public:
         void registerCommand(const Command& command);
         [[nodiscard]] const Command* getBuiltinCommand(const std::string& name) const;
-        void executeCommand(const std::string& name, std::vector<std::string>& arguments) const;
+        void executeCommand(const std::string& name,const std::vector<std::string>& arguments) const;
 };
 
 #endif //COMMANDMANAGER_H
