@@ -38,8 +38,11 @@ void CommandManager::executeCommand(const std::string& name, const std::vector<s
 
         try {
             SubprogramExecutor executor(pathToFile,arguments);
-            std::string result = executor.execute();
-            if(!result.empty()){std::cout << result << std::endl;}
+            const std::string result = executor.execute();
+            std::ostringstream oss;
+            if(!result.empty()){oss << result ;}
+            oss << std::endl;
+            std::cout << oss.str();
         } catch (const std::exception &e) {
             std::cout << "Error while executing command: " << pathToFile << std::endl << e.what() << std::endl;
         }
