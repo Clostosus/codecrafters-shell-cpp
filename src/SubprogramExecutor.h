@@ -17,6 +17,13 @@ public:
     ~SubprogramExecutor()=default;
     // Executes a Subprogram with Arguments and waits until completion
     [[nodiscard]] std::string execute();
+
+    class SubprogramExecutorException : public std::runtime_error {
+    private:
+        std::string errorMessage;
+        public:
+        explicit SubprogramExecutorException(const std::string &errMessage);
+    };
 };
 
 

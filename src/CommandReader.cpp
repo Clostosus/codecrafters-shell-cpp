@@ -19,6 +19,7 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
     arguments.clear();
     std::string input;
     std::getline(std::cin, input);
+    if (input.empty()) {cmdName = ""; return;}
 
     // Argumente extrahieren
     std::string arg;

@@ -32,7 +32,12 @@ std::string SubprogramExecutor::execute(){
         executeWithRedirect(redirectPath);
         return "";
     }else {
-        return executeNoRedirect(execArgv);
+        try {
+            return executeNoRedirect(execArgv);
+        } catch (SubprogramExecutorException &e) {
+            std::cout << e.what() << std::endl;
+            return "";
+        }
     }
 }
 
@@ -69,12 +74,13 @@ std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & ex
         waitpid(pid, &status, 0); // wait for child process to finish
         if (WIFEXITED(status)) {
             if (WEXITSTATUS(status) != 0) {
-                throw std::runtime_error("Subprogram exited with error code: " + std::to_string(WEXITSTATUS(status)));
+                throw SubprogramExecutorException("Subprogram exited with error code: " + std::to_string(WEXITSTATUS(status)));
             }
         } else if (WIFSIGNALED(status)) {
-            throw std::runtime_error("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
+            throw SubprogramExecutorException("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
         }
-        return output.str();
+        std::string result = output.str();
+        return result;
     } else { // fork failed
         throw std::runtime_error("Failed to fork process");
     }
@@ -87,3 +93,6 @@ void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFi
      file.write(output.str().c_str(), output.str().size());
      file.close();
 }
+
+SubprogramExecutor::SubprogramExecutorException::SubprogramExecutorException(const std::string &errMessage): runtime_error(errMessage) {}
+
