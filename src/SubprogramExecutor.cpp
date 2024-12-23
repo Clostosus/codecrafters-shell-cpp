@@ -20,7 +20,7 @@ std::string SubprogramExecutor::execute(){
         int i = 0;
         for (i=0; i < args.size(); i++) {
             if(!redirectRequired) {
-                if(args.at(i) == ">"){redirectRequired = true;}
+                if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true;}
                 else if(!args.at(i).empty()) { execArgv.push_back(args.at(i).data()); }
             }else {
                 redirectPath = args.at(i);
