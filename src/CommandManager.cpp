@@ -44,6 +44,6 @@ void CommandManager::executeExternalBinary(const std::string& cmdName, const std
         const std::string result = executor.execute();
         if(!result.empty()){std::cout << result;}
     } catch (const std::runtime_error &e) {
-        std::cout << "Error while executing command: " << pathToFile << std::endl << e.what() << std::endl;
+        // std::cout  << e.what() << std::endl;
     }
 }
