@@ -74,8 +74,7 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
            if (stat(targetPath.c_str(), &statStruct) == 0) {
                chdir(targetPath.c_str()); output.stdoutOutput = ""; output.stderrOutput = "";
            }else {
-               oss << "cd: " << targetPath<< ": No such file or directory" << std::endl;
-               output.stderrOutput = oss.str(); output.stdoutOutput = "";
+               output.stderrOutput = "cd: " + targetPath + ": No such file or directory" + '\n';
            }
            return output;
         }, [](const std::vector<std::string>& args) {

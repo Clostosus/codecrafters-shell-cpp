@@ -25,35 +25,29 @@ bool Command::validateArguments(const std::vector<std::string>& args) const {
 }
 
 void Command::executeCommand( std::vector<std::string>& args) const {
-    if (execute) {
-        bool redirectRequired = false; std::string redirectPath; int redirStream = 1;
-        if (!args.empty()) {
-            int i, breakNum = -1;
-            for (i=0; i < args.size(); i++) {
-                if(!redirectRequired) {
-                    if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirStream = STDOUT_FILENO; breakNum = i;}
-                    else if(args[i] == "2>"){redirectRequired = true; redirStream = STDERR_FILENO; breakNum = i; }
-                }else {
-                    redirectPath = args.at(i);
-                }
-            }
-            if(breakNum != -1) { // remove redirect and all following from arguments
-                for(int j = static_cast<int>(args.size())-1; j >= breakNum; j--) {
-                    args.erase(args.begin()+j);
-                }
-            }
-        }
-
-        if(redirectRequired) {
-            executeBuiltinWithRedirect(redirectPath,args, redirStream);
-        }else {
-            CommandOutput_t result = execute(args);
-            if (!result.stdoutOutput.empty()){ std::cout << result.stdoutOutput; }
-        }
-
-    } else {
-        throw std::runtime_error("No execution function defined for this command.");
-    }
+    if (! execute) {throw std::runtime_error("No execution function defined for this command.");}
+    bool redirectRequired = false; std::string redirectPath; int redirStream = 1;
+   if (!args.empty()) {
+     int i, breakNum = -1;
+     for (i=0; i < args.size(); i++) {
+      if(!redirectRequired) {
+       if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirStream = STDOUT_FILENO; breakNum = i;}
+       else if(args[i] == "2>"){redirectRequired = true; redirStream = STDERR_FILENO; breakNum = i; }
+      }else {redirectPath = args.at(i);}
+     }
+     if(breakNum != -1) { // remove redirect and all following from arguments
+      for(int j = static_cast<int>(args.size())-1; j >= breakNum; j--) {
+       args.erase(args.begin()+j);
+      }
+     }
+   }
+   if(redirectRequired) {
+      executeBuiltinWithRedirect(redirectPath,args, redirStream);
+   }else {
+      auto [stdoutOutput, stderrOutput] = execute(args);
+      if (!stdoutOutput.empty()){ std::cout << stdoutOutput; }
+      if(!stderrOutput.empty()){ std::cout << stderrOutput; }
+   }
 }
 
 void Command::executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string> &args, int rediredStream) const {
