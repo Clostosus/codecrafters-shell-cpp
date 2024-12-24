@@ -63,9 +63,13 @@ void Command::executeBuiltinWithRedirect(const std::string &redirPath, const std
         auto [stdoutOutput, stderrOutput] = execute(args);
         switch(rediredStream) {
             case STDOUT_FILENO:
-                file.write(stdoutOutput.c_str(), static_cast<long>(stdoutOutput.size())); break;
+                file.write(stdoutOutput.c_str(), static_cast<long>(stdoutOutput.size()));
+                std::cerr << stderrOutput;
+                break;
             case STDERR_FILENO:
-                file.write(stderrOutput.c_str(), static_cast<long>(stderrOutput.size())); break;
+                file.write(stderrOutput.c_str(), static_cast<long>(stderrOutput.size()));
+                std::cout << stdoutOutput;
+                break;
             default:
                 throw std::runtime_error("Invalid redirection stream.");
         }
