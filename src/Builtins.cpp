@@ -3,7 +3,6 @@
 #include <cstring>
 #include <iostream>
 #include <unistd.h>
-#include <bits/ranges_algo.h>
 #include <sys/stat.h>
 
 #include "FileSearcher.h"
@@ -15,7 +14,7 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
         "exit",
         "Exits the console",
         {},
-        [](const std::vector<std::string>& args) { std::exit(stoi(args.at(0))); return "";},
+        [](const std::vector<std::string>& args) -> CommandOutput_t {CommandOutput_t output; std::exit(stoi(args.at(0))); return {"",""};},
         [](const std::vector<std::string>& args) {
             // Validierung des Arguments
               if (args.size() != 1) {
@@ -35,30 +34,34 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
     ));
     Manager.registerCommand(Command(
         "echo", "Prints the input", {},
-        [](const std::vector<std::string>& args)
+        [](const std::vector<std::string>& args) -> CommandOutput_t
         {
+            CommandOutput_t output;
             std::ostringstream oss;
             for (int i=0;i<args.size()-1;i++) { oss << args.at(i)<< ' '; }
             oss << args.at(args.size()-1)<< std::endl;
-            return oss.str();
+            output.stdoutOutput = oss.str(); output.stderrOutput = "";
+            return output;
         },
         [](const std::vector<std::string>& args) {
             return !args.empty();
         }
         ));
     Manager.registerCommand(Command("pwd", "Print the current working directory",
-        [](const std::vector<std::string>& args) {
+        [](const std::vector<std::string>& args)->CommandOutput_t {
+            CommandOutput_t output;
             std::ostringstream oss;
             char pathBuffer[1024];
             if(getcwd(pathBuffer, sizeof(pathBuffer)) != nullptr) {
-                oss << pathBuffer << std::endl;
+                oss << pathBuffer << std::endl; output.stdoutOutput = oss.str(); output.stderrOutput = "";
             } else {
-                oss << strerror(errno) << std::endl;
+                oss << strerror(errno) << std::endl; output.stderrOutput = oss.str(); output.stdoutOutput = "";
             }
-            return oss.str();
+            return output;
         }));
     Manager.registerCommand(Command("cd", "Change current working directory",{},
-        [](const std::vector<std::string>& args) {
+        [](const std::vector<std::string>& args)->CommandOutput_t {
+            CommandOutput_t output;
             std::string targetPath = args.at(0); // create a modifiable copy
             const auto pos = targetPath.find('~'); // handle user home path
                if(pos != std::string::npos) {
@@ -69,41 +72,48 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
            struct stat statStruct{};
            // If the file/directory exists at the path returns 0
            if (stat(targetPath.c_str(), &statStruct) == 0) {
-               chdir(targetPath.c_str());
+               chdir(targetPath.c_str()); output.stdoutOutput = ""; output.stderrOutput = "";
            }else {
-                   oss << "cd: " << targetPath<< ": No such file or directory" << std::endl;
+               oss << "cd: " << targetPath<< ": No such file or directory" << std::endl;
+               output.stderrOutput = oss.str(); output.stdoutOutput = "";
            }
-            return oss.str();
+           return output;
         }, [](const std::vector<std::string>& args) {
             if(args.empty()) return false;
             return true;
         }));
     Manager.registerCommand(Command("type", "Prints the type of a command name",{},
-        [Manager](const std::vector<std::string>& args) {
+        [Manager](const std::vector<std::string>& args) ->CommandOutput_t {
+            CommandOutput_t output;
             std::ostringstream oss;
-            if (args.size() != 1) { oss << "Usage: type <commandName>" << std::endl; }
+            if (args.size() != 1) {
+                oss << "Usage: type <commandName>" << std::endl;
+                output.stderrOutput = oss.str(); output.stdoutOutput = "";
+                return output;
+            }
             const std::string& searchedCmdName = args.at(0);
 
             try {
                 if(Manager.getBuiltinCommand(searchedCmdName) == nullptr) {
                     throw CommandManager::CommandNotFoundException(args.at(0));
+                }else {
+                    oss << searchedCmdName << " is a shell builtin"   << std::endl;
                 }
-                oss << searchedCmdName << " is a shell builtin"   << std::endl;
             } catch (CommandManager::CommandNotFoundException &e) {
                 if(args.at(0) != "type") {
                   auto searcher = FileSearcher();
                   try {
                       std::string exePath = searcher.getPathToFile(searchedCmdName);
-                      std::cout << searchedCmdName << " is " << exePath << std::endl;
+                      oss << searchedCmdName << " is " << exePath << std::endl;
                   } catch (FileSearcher::FileNotFoundException &filefindError) {
                       oss << filefindError.what() << ": not found" << std::endl;
                   }
-
                 }else {
                     oss << "type" << " is a shell builtin"   << std::endl;
                 }
             }
-            return oss.str();
+            output.stdoutOutput = oss.str();
+            return output;
         },
         [](const std::vector<std::string>& args) {return args.size() == 1; }
         ));

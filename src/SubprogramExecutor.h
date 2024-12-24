@@ -9,11 +9,11 @@ class SubprogramExecutor {
 private:
     std::vector<std::string> args;
     std::vector<char*> execArgv;
-    std::string pathToCmd;
+    std::string CmdName;
     [[nodiscard]] std::string executeNoRedirect(const std::vector<char *> & execArgv) const;
     void executeWithRedirect(const std::string& pathToRedirectFile, int streamToRedirect) const;
 public:
-    SubprogramExecutor(const std::string &path, const std::vector<std::string> &args);
+    SubprogramExecutor(const std::string &cmdName, const std::vector<std::string> &args);
     ~SubprogramExecutor()=default;
     // Executes a Subprogram with Arguments and waits until completion
     [[nodiscard]] std::string execute();

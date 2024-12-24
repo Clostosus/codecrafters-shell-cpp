@@ -7,8 +7,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-SubprogramExecutor::SubprogramExecutor(const std::string &path, const std::vector<std::string> &args) {
-    this->args = args; this->pathToCmd = path;
+SubprogramExecutor::SubprogramExecutor(const std::string &cmdName, const std::vector<std::string> &args) {
+    this->args = args; this->CmdName = cmdName;
     execArgv = std::vector<char *>();
 }
 
@@ -17,7 +17,7 @@ std::string SubprogramExecutor::execute(){
     bool redirectRequired = false;
     std::string redirectPath;
     int redirectStream = 1;
-    execArgv.push_back(pathToCmd.data()); // Program name
+    execArgv.push_back(CmdName.data()); // Program name
     if (!args.empty()) {
         int i = 0;
         for (i=0; i < args.size(); i++) {
@@ -61,7 +61,7 @@ std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & ex
         }
         close(stdoutPipe[1]); close(stderrPipe[1]);// close Pipe writing end
 
-        execvp(pathToCmd.c_str(), execArgv.data());
+        execvp(CmdName.c_str(), execArgv.data());
         // execvp only reaches this line on failure
         perror("execvp failed");
         _exit(EXIT_FAILURE);
@@ -118,7 +118,7 @@ void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFi
         }
         close(stdoutPipe[1]); close(stderrPipe[1]);// close Pipe writing end
 
-        execvp(pathToCmd.c_str(), execArgv.data());
+        execvp(CmdName.c_str(), execArgv.data());
         // execvp only reaches this line on failure
         perror("execvp failed");
         _exit(EXIT_FAILURE);
