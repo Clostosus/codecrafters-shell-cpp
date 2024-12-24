@@ -34,8 +34,7 @@ void CommandManager::executeExternalBinary(const std::string& cmdName, const std
 
     try {
         SubprogramExecutor executor(cmdName,args);
-        const std::string result = executor.execute();
-        if(!result.empty()){std::cout << result;}
+        executor.execute();
     } catch (const SubprogramExecutor::SubprogramExecutorException &e) {
         std::cout  << e.what();
     }

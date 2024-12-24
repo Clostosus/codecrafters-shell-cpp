@@ -16,7 +16,7 @@ public:
     SubprogramExecutor(const std::string &cmdName, const std::vector<std::string> &args);
     ~SubprogramExecutor()=default;
     // Executes a Subprogram with Arguments and waits until completion
-    [[nodiscard]] std::string execute();
+    void execute();
 
     class SubprogramExecutorException : public std::runtime_error {
     private:

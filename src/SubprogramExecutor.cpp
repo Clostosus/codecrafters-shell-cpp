@@ -13,7 +13,7 @@ SubprogramExecutor::SubprogramExecutor(const std::string &cmdName, const std::ve
 }
 
 
-std::string SubprogramExecutor::execute(){
+void SubprogramExecutor::execute(){
     bool redirectRequired = false;
     std::string redirectPath;
     int redirectStream = 1;
@@ -34,13 +34,11 @@ std::string SubprogramExecutor::execute(){
 
     if(redirectRequired) {
         executeWithRedirect(redirectPath, redirectStream);
-        return "";
     }else {
         try {
-            return executeNoRedirect(execArgv);
+            std::cout << executeNoRedirect(execArgv);
         } catch (SubprogramExecutorException &e) {
             std::cout << e.what() << std::endl;
-            return "";
         }
     }
 }
@@ -99,11 +97,11 @@ std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & ex
 }
 
 void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFile, int streamToRedirect) const {
-     std::fstream file;
-     file.open(pathToRedirectFile, std::ios_base::out);
-     if(!file.fail()) {
+    std::fstream file;
+    file.open(pathToRedirectFile, std::ios_base::out);
+    if(file.fail()){ file.close(); return;}
 
-         // create Pipe "stringstream"
+    // create Pipe "stringstream"
     int stdoutPipe[2],stderrPipe[2];
     if (pipe(stdoutPipe) == -1 || pipe(stderrPipe) == -1) { throw std::runtime_error("Failed to create pipe"); }
 
@@ -143,6 +141,11 @@ void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFi
             while ((bytesRead = read(stderrPipe[0], buffer, sizeof(buffer))) > 0) {stderrOutput.write(buffer, bytesRead);}
         }
         close(stderrPipe[0]);
+        file.close();
+
+        if(streamToRedirect != STDOUT_FILENO) {
+            std::cout << stdoutOutput.str();
+        }else { std::cerr << stderrOutput.str(); }
 
         int status;
         waitpid(pid, &status, 0); // wait for child process to finish
@@ -153,13 +156,10 @@ void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFi
             }
         } else if (WIFSIGNALED(status)) {
             throw SubprogramExecutorException("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
-        }
-    } else { // fork failed
+        } else { // fork failed
         throw std::runtime_error("Failed to fork process");
+        }
     }
-
-     }
-     file.close();
 }
 
 SubprogramExecutor::SubprogramExecutorException::SubprogramExecutorException(const std::string &errMessage): runtime_error(errMessage) {}
