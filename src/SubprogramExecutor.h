@@ -11,7 +11,7 @@ private:
     std::vector<char*> execArgv;
     std::string pathToCmd;
     [[nodiscard]] std::string executeNoRedirect(const std::vector<char *> & execArgv) const;
-    void executeWithRedirect(const std::string& pathToRedirectFile) const;
+    void executeWithRedirect(const std::string& pathToRedirectFile, int streamToRedirect) const;
 public:
     SubprogramExecutor(const std::string &path, const std::vector<std::string> &args);
     ~SubprogramExecutor()=default;

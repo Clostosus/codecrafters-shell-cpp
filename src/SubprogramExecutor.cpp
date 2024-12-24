@@ -14,13 +14,16 @@ SubprogramExecutor::SubprogramExecutor(const std::string &path, const std::vecto
 
 
 std::string SubprogramExecutor::execute(){
-    bool redirectRequired = false; std::string redirectPath;
+    bool redirectRequired = false;
+    std::string redirectPath;
+    int redirectStream = 1;
     execArgv.push_back(pathToCmd.data()); // Program name
     if (!args.empty()) {
         int i = 0;
         for (i=0; i < args.size(); i++) {
             if(!redirectRequired) {
-                if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true;}
+                if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirectStream = STDOUT_FILENO;}
+                else if(args.at(i) == "2>"){redirectRequired = true; redirectStream = STDERR_FILENO;}
                 else if(!args.at(i).empty()) { execArgv.push_back(args.at(i).data()); }
             }else {
                 redirectPath = args.at(i);
@@ -28,8 +31,9 @@ std::string SubprogramExecutor::execute(){
         }
         execArgv.push_back(nullptr); // Null-terminated
     }
+
     if(redirectRequired) {
-        executeWithRedirect(redirectPath);
+        executeWithRedirect(redirectPath, redirectStream);
         return "";
     }else {
         try {
@@ -94,7 +98,7 @@ std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & ex
     }
 }
 
-void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFile) const {
+void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFile, int streamToRedirect) const {
      std::fstream file;
      file.open(pathToRedirectFile, std::ios_base::out);
      if(!file.fail()) {
@@ -121,17 +125,22 @@ void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFi
     } else if(pid > 0) { // parent process
         close(stdoutPipe[1]); close(stderrPipe[1]);// close Writing end of pipe
         // Read subprogram output
-        std::ostringstream stderrOutput;
+        std::ostringstream stdoutOutput, stderrOutput;
         char buffer[1024];
         ssize_t bytesRead;
-        while ((bytesRead = read(stdoutPipe[0], buffer, sizeof(buffer))) > 0) {
-            file.write(buffer, bytesRead);  // Schreibe direkt in die Datei
+        // Read stdout
+        if(streamToRedirect == STDOUT_FILENO) {
+            while ((bytesRead = read(stdoutPipe[0], buffer, sizeof(buffer))) > 0) { file.write(buffer, bytesRead); }
+        } else {
+            while ((bytesRead = read(stdoutPipe[0], buffer, sizeof(buffer))) > 0) { stdoutOutput.write(buffer, bytesRead); }
         }
         close(stdoutPipe[0]); // close Pipe Reading end
 
         // Read stderr
-        while ((bytesRead = read(stderrPipe[0], buffer, sizeof(buffer))) > 0) {
-            stderrOutput.write(buffer, bytesRead);
+        if(streamToRedirect == STDERR_FILENO) {
+            while ((bytesRead = read(stderrPipe[0], buffer, sizeof(buffer))) > 0) { file.write(buffer, bytesRead); }
+        } else {
+            while ((bytesRead = read(stderrPipe[0], buffer, sizeof(buffer))) > 0) {stderrOutput.write(buffer, bytesRead);}
         }
         close(stderrPipe[0]);
 
