@@ -34,7 +34,7 @@ protected:
     std::function<CommandOutput_t(const std::vector<std::string>& args)> execute;
     std::function<bool(const std::vector<std::string>&)> validate;
 
-    void executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string>& args, int rediredStream) const;
+    void executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string>& args, int rediredStream, bool append) const;
 public:
     Command(const std::string &name, const std::string &description, const std::vector<std::string> &arguments,
             const std::function<CommandOutput_t(const std::vector<std::string> &args)> &execute,

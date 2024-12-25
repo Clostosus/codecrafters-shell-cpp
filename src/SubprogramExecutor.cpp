@@ -14,7 +14,7 @@ SubprogramExecutor::SubprogramExecutor(const std::string &cmdName, const std::ve
 
 
 void SubprogramExecutor::execute(){
-    bool redirectRequired = false;
+    bool redirectRequired = false, append = false;
     std::string redirectPath;
     int redirectStream = 1;
     execArgv.push_back(CmdName.data()); // Program name
@@ -24,7 +24,8 @@ void SubprogramExecutor::execute(){
             if(!redirectRequired) {
                 if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirectStream = STDOUT_FILENO;}
                 else if(args.at(i) == "2>"){redirectRequired = true; redirectStream = STDERR_FILENO;}
-                else if(!args.at(i).empty()) { execArgv.push_back(args.at(i).data()); }
+                else if(args[i] == ">>" || args[i] == "1>>"){redirectRequired = true; redirectStream = STDOUT_FILENO; append = true;}
+                else if(!args[i].empty()) { execArgv.push_back(args.at(i).data()); }
             }else {
                 redirectPath = args.at(i);
             }
@@ -33,7 +34,7 @@ void SubprogramExecutor::execute(){
     }
 
     if(redirectRequired) {
-        executeWithRedirect(redirectPath, redirectStream);
+        executeWithRedirect(redirectPath, redirectStream,append);
     }else {
         try {
             std::cout << executeNoRedirect(execArgv);
@@ -96,9 +97,14 @@ std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & ex
     }
 }
 
-void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFile, int streamToRedirect) const {
+void SubprogramExecutor::executeWithRedirect(const std::string& pathToRedirectFile, int streamToRedirect, bool append) const {
     std::fstream file;
-    file.open(pathToRedirectFile, std::ios_base::out);
+    if(append) {
+        file.open(pathToRedirectFile,std::ios_base::app);
+    }else {
+        file.open(pathToRedirectFile, std::ios_base::out);
+    }
+
     if(file.fail()){ file.close(); return;}
 
     // create Pipe "stringstream"

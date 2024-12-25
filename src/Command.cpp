@@ -26,13 +26,15 @@ bool Command::validateArguments(const std::vector<std::string>& args) const {
 
 void Command::executeCommand( std::vector<std::string>& args) const {
     if (! execute) {throw std::runtime_error("No execution function defined for this command.");}
-    bool redirectRequired = false; std::string redirectPath; int redirStream = 1;
+    bool redirectRequired = false, append = false;
+    std::string redirectPath; int redirStream = 1;
    if (!args.empty()) {
      int i, breakNum = -1;
      for (i=0; i < args.size(); i++) {
       if(!redirectRequired) {
        if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirStream = STDOUT_FILENO; breakNum = i;}
        else if(args[i] == "2>"){redirectRequired = true; redirStream = STDERR_FILENO; breakNum = i; }
+       else if(args[i] == "1>>" || args[i] == ">>"){redirectRequired = true; redirStream = STDOUT_FILENO; breakNum = i; append = true;}
       }else {redirectPath = args.at(i);}
      }
      if(breakNum != -1) { // remove redirect and all following from arguments
@@ -42,7 +44,7 @@ void Command::executeCommand( std::vector<std::string>& args) const {
      }
    }
    if(redirectRequired) {
-      executeBuiltinWithRedirect(redirectPath,args, redirStream);
+      executeBuiltinWithRedirect(redirectPath,args, redirStream,append);
    }else {
       auto [stdoutOutput, stderrOutput] = execute(args);
       if (!stdoutOutput.empty()){ std::cout << stdoutOutput; }
@@ -50,9 +52,14 @@ void Command::executeCommand( std::vector<std::string>& args) const {
    }
 }
 
-void Command::executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string> &args, int rediredStream) const {
+void Command::executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string> &args, int rediredStream, bool append) const {
     std::fstream file;
-    file.open(redirPath, std::ios_base::out);
+    if(append) {
+        file.open(redirPath, std::ios::app);
+    } else {
+        file.open(redirPath, std::ios_base::out);
+    }
+
     if(!file.fail()) {
         auto [stdoutOutput, stderrOutput] = execute(args);
         switch(rediredStream) {
