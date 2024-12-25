@@ -35,6 +35,7 @@ void Command::executeCommand( std::vector<std::string>& args) const {
        if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirStream = STDOUT_FILENO; breakNum = i;}
        else if(args[i] == "2>"){redirectRequired = true; redirStream = STDERR_FILENO; breakNum = i; }
        else if(args[i] == "1>>" || args[i] == ">>"){redirectRequired = true; redirStream = STDOUT_FILENO; breakNum = i; append = true;}
+       else if(args[i] == "2>>"){redirectRequired = true, redirStream = STDERR_FILENO; breakNum = i; append = true;}
       }else {redirectPath = args.at(i);}
      }
      if(breakNum != -1) { // remove redirect and all following from arguments

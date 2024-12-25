@@ -25,6 +25,7 @@ void SubprogramExecutor::execute(){
                 if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirectStream = STDOUT_FILENO;}
                 else if(args.at(i) == "2>"){redirectRequired = true; redirectStream = STDERR_FILENO;}
                 else if(args[i] == ">>" || args[i] == "1>>"){redirectRequired = true; redirectStream = STDOUT_FILENO; append = true;}
+                else if(args[i] == "2>>"){redirectRequired = true; redirectStream = STDERR_FILENO; append = true;}
                 else if(!args[i].empty()) { execArgv.push_back(args.at(i).data()); }
             }else {
                 redirectPath = args.at(i);
