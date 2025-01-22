@@ -14,7 +14,6 @@ private:
    CommandReader();
    // Reads a line from stdin, fills Arguments vector and assigns cmdName, handles escape characters
    void readOneLine(std::string & cmdName, std::vector<std::string> & arguments);
-
 };
 
 

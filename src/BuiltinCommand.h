@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "CommandInterface.h"
+
 // Eigene Exception-Klasse für den Fehlerfall, dass keine Ausführungsfunktion definiert ist
 class CommandExecutionException final : public std::runtime_error {
 private:
@@ -26,27 +28,27 @@ struct CommandOutput_t {
     std::string stderrOutput;
 };
 
-class Command {
+class BuiltinCommand : public CommandInterface{
 protected:
     std::string name;
     std::string description;
     std::vector<std::string> argumentPrefixes;
-    std::function<CommandOutput_t(const std::vector<std::string>& args)> execute;
+    std::function<CommandOutput_t(const std::vector<std::string>& args)> executeFunction;
     std::function<bool(const std::vector<std::string>&)> validate;
 
     void executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string>& args, int rediredStream, bool append) const;
 public:
-    Command(const std::string &name, const std::string &description, const std::vector<std::string> &arguments,
+    BuiltinCommand(const std::string &name, const std::string &description, const std::vector<std::string> &arguments,
             const std::function<CommandOutput_t(const std::vector<std::string> &args)> &execute,
             const std::function<bool(const std::vector<std::string> &)> &validate);
 
-    Command(const std::string& name, const std::string& description, const std::function<CommandOutput_t(const std::vector<std::string>& args)> &execute);
+    BuiltinCommand(const std::string& name, const std::string& description, const std::function<CommandOutput_t(const std::vector<std::string>& args)> &execute);
 
     [[nodiscard]] bool validateArguments(const std::vector<std::string>& args) const;
-    void executeCommand(std::vector<std::string> &args) const;
+    void execute(std::vector<std::string> &args) const override;
 
-    [[nodiscard]] std::string getName()const;
-    [[nodiscard]] std::string getDescription()const;
+    [[nodiscard]] std::string getName()const override;
+    [[nodiscard]] std::string getDescription()const override;
 };
 
 

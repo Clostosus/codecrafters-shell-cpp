@@ -3,44 +3,34 @@
 #include "CommandManager.h"
 
 #include "ArgumentsParser.h"
-#include "SubprogramExecutor.h"
+#include "CommandNotFoundException.h"
+#include "ExternalCommand.h"
 #include "FileSearcher.h"
 
-void CommandManager::registerCommand(const Command& command) {
-    if(commands.contains(command.getName())) {
-        throw std::runtime_error("Command already exists: " + command.getName());
-    } else {
-        commands.insert(std::make_pair(command.getName(), command));
+void CommandManager::registerCommand(const std::shared_ptr<CommandInterface>& command) {
+    const std::string & name = command->getName();
+    if(commands.contains(name)) {
+        throw std::runtime_error("Command already exists: " + name);
     }
-}
-
-const Command* CommandManager::getBuiltinCommand(const std::string& name) const {
-    const auto it = commands.find(name);
-    if(it != commands.end()) { return &it->second; }
-    return nullptr; // Kein Command mit diesem Namen gefunden
+    commands.insert({name, command});
 }
 
 void CommandManager::executeCommand(const std::string &name, std::vector<std::string> &arguments) const {
-    const Command* cmd = getBuiltinCommand(name);
-    if ( cmd != nullptr) { // execute Builtin
-        if (cmd->validateArguments(arguments)) {
-            cmd->executeCommand(arguments);
+    auto it = commands.find(name);
+    if (it != commands.end()) {
+        // execute Builtin-Command
+        std::shared_ptr<BuiltinCommand> builtinCmd = dynamic_pointer_cast<BuiltinCommand>(it->second);
+        if (builtinCmd->validateArguments(arguments)) {
+            builtinCmd->execute(arguments);
         } else { throw std::runtime_error("Invalid arguments for command: " + name); }
-    } else { executeExternalBinary(name,arguments);}
-}
-
-void CommandManager::executeExternalBinary(const std::string& cmdName, const std::vector<std::string>& args) const{
-    std::string pathToFile;
-    try {
-        FileSearcher searcher;
-        pathToFile = searcher.getPathToFile(cmdName);
-    } catch ([[maybe_unused]] FileSearcher::FileNotFoundException &fileNotFoundError) { throw CommandNotFoundException(cmdName); }
-
-    try {
-        SubprogramExecutor executor(cmdName,args);
-        executor.execute();
-    } catch (const SubprogramExecutor::SubprogramExecutorException &e) {
-        std::cout  << e.what();
+    } else {
+        // Externen Befehl ausführen
+        try {
+            const ExternalCommand external(name);
+            external.execute(arguments);
+        } catch (const CommandNotFoundException& e) {
+            std::cerr << e.what() << std::endl;
+        }
     }
 }
 
@@ -52,3 +42,14 @@ void CommandManager::printAllCmdNames(std::ostringstream &outputstream) {
         ++it;
     }
 }
+
+bool CommandManager::existsBuiltinCommand(const std::string &name) const {
+    if(const auto it = commands.find(name); it != commands.end()) {
+        // Check if command is a builtin type command
+        if (dynamic_cast<BuiltinCommand*>(it->second.get()) != nullptr) {
+            return true;
+        }
+    }
+    return false;
+}
+
