@@ -17,7 +17,7 @@ int main() {
             std::string commandName;
             std::vector<std::string> arguments;
             CommandReader reader;
-            reader.readOneLine(commandName,arguments);
+            reader.readOneLine(commandName,arguments,manager);
             if (!commandName.empty()) { manager.executeCommand(commandName, arguments); }
         } catch (const CommandNotFoundException& e) {
             std::cout << e.what() << std::endl;

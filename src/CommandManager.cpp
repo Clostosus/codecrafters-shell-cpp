@@ -43,6 +43,19 @@ void CommandManager::printAllCmdNames(std::ostringstream &outputstream) {
     }
 }
 
+std::vector<std::string> * CommandManager::getAllNamesWithPrefix(const std::string &prefix) const {
+    auto * names = new std::vector<std::string>;
+
+    for (const auto& pair : this->commands) {
+        const std::string& key = pair.first;
+        if ( key.find(prefix) == 0) {
+            names->push_back(key);
+        }
+    }
+    return names;
+}
+
+
 bool CommandManager::existsBuiltinCommand(const std::string &name) const {
     if(const auto it = commands.find(name); it != commands.end()) {
         // Check if command is a builtin type command

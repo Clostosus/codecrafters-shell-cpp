@@ -15,16 +15,15 @@ CommandReader::CommandReader() {
     escapedNextChar = false;
 };
 
-void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &arguments) {
-    arguments.clear();
+void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &arguments, CommandManager &cmdManager) {
+    arguments.clear(); cmdName.clear();
     std::string input;
-    std::getline(std::cin, input);
+    readCharacterByCharacter(input, cmdManager);
     if (input.empty()) {cmdName = ""; return;}
 
     // Argumente extrahieren
     std::string arg;
-        std::string::iterator pos = input.begin(); // argStart = input.begin(),argEnd = input.end();
-        bool insideSingleQuotes = false, insideWord = false;
+    std::string::iterator pos = input.begin();
 
     for (pos ; pos <= input.end()+1; pos++) {
         char c = *pos, nextChar = *(pos+1);
@@ -37,6 +36,36 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
     cmdName = arguments.front();
     arguments.erase(arguments.begin());
 }
+
+void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandManager &manager) {
+    char c;
+    while (std::cin.get(c)) {
+        if (c == '\n') {
+            return; // Eingabe abgeschlossen
+        } else if (c == '\t') {
+            // Autocompletion bei Tab-Taste
+            std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
+            if (suggestions && !suggestions->empty()) {
+                if (suggestions->size() == 1) {
+                    // Wenn genau ein Vorschlag existiert, vervollständige den cmdName
+                    currentInput = suggestions->front();
+                    std::cout << "\r" << currentInput << " ";  // Vorschlag sofort anzeigen, überschreibt den aktuellen Input
+                    std::cout.flush();// Ausgabe sofort sichtbar machen
+                } else {
+                    // Wenn mehrere Vorschläge existieren, zeige nichts an, aber lasse nutzer weitertippen
+                }
+            }
+            delete suggestions;
+            continue; // Gehe zur nächsten Iteration, um die Eingabe zu verarbeiten
+        } else { // Normale Zeichen werden zum currentInput hinzugefügt
+            currentInput += c;
+            std::cout << c;
+            std::cout.flush();
+        }
+    }
+}
+
+
 
 void CommandReader::handleStateTransition(char currentChar, char nextChar, std::string &currentArgument) {
     if(currentState != ParserState::InsideSingleQuotes) {
