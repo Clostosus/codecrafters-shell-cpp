@@ -39,7 +39,8 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
 
 void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandManager &manager) {
     char c;
-    while (std::cin.get(c)) {
+    while (true) {
+        c = getchar();
         if (c == '\n') {
             return; // Eingabe abgeschlossen
         } else if (c == '\t') {
@@ -47,20 +48,18 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
             std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
             if (suggestions && !suggestions->empty()) {
                 if (suggestions->size() == 1) {
-                    // Wenn genau ein Vorschlag existiert, vervollständige den cmdName
+                    while (!currentInput.empty()) {
+                        std::cout << "\b \b";
+                        currentInput.pop_back();
+                    }
                     currentInput = suggestions->front();
-                    std::cout << "\r" << currentInput << " ";  // Vorschlag sofort anzeigen, überschreibt den aktuellen Input
-                    std::cout.flush();// Ausgabe sofort sichtbar machen
-                } else {
-                    // Wenn mehrere Vorschläge existieren, zeige nichts an, aber lasse nutzer weitertippen
+                    std::cout << "\r" << currentInput << '\n';  // Vorschlag sofort anzeigen, überschreibt den aktuellen Input
                 }
             }
             delete suggestions;
             continue; // Gehe zur nächsten Iteration, um die Eingabe zu verarbeiten
         } else { // Normale Zeichen werden zum currentInput hinzugefügt
             currentInput += c;
-            std::cout << c;
-            std::cout.flush();
         }
     }
 }
