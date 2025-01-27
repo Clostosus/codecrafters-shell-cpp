@@ -40,7 +40,7 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
 void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandManager &manager) {
     char c;
     while (true) {
-        c = getchar();
+        c = static_cast<char>(getchar());
         if (c == '\n') {
             return; // Eingabe abgeschlossen
         } else if (c == '\t') {

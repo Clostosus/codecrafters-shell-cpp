@@ -29,8 +29,8 @@ void BuiltinCommand::execute( std::vector<std::string>& args) const {
     bool redirectRequired = false, append = false;
     std::string redirectPath; int redirStream = 1;
    if (!args.empty()) {
-     int i, breakNum = -1;
-     for (i=0; i < args.size(); i++) {
+     int breakNum = -1;
+     for (int i=0; i < args.size(); i++) {
       if(!redirectRequired) {
        if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirStream = STDOUT_FILENO; breakNum = i;}
        else if(args[i] == "2>"){redirectRequired = true; redirStream = STDERR_FILENO; breakNum = i; }

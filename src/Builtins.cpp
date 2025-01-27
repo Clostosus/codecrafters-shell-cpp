@@ -14,7 +14,7 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
         "exit",
         "Exits the console",
         {},
-        [](const std::vector<std::string>& args) -> CommandOutput_t {CommandOutput_t output; std::exit(stoi(args.at(0))); return {"",""};},
+        [](const std::vector<std::string>& args) -> CommandOutput_t {CommandOutput_t output; std::exit(stoi(args.at(0))); },
         [](const std::vector<std::string>& args) {
             // Validierung des Arguments
               if (args.size() != 1) {
@@ -23,11 +23,11 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
 
               // Überprüfen, ob das Argument eine gültige Zahl ist
               try {
-                  int val = std::stoi(args[0]);
+                  std::stoi(args[0]);
                   return true;  // Nur wenn das Argument int ist, gilt die Eingabe als gültig
-              } catch (const std::invalid_argument& e) {
+              } catch (const std::invalid_argument& ) {
                   return false;  // Ungültiges Argument (keine gültige Zahl)
-              } catch (const std::out_of_range& e) {
+              } catch (const std::out_of_range& ) {
                   return false;  // Zahl ist außerhalb des gültigen Bereichs für int
               }
         }
@@ -100,7 +100,7 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
                     throw CommandNotFoundException(args.at(0));
                 }
                 oss << searchedCmdName << " is a shell builtin"   << std::endl;
-            } catch (CommandNotFoundException &e) {
+            } catch (CommandNotFoundException&) {
                 if(args.at(0) != "type") {
                   auto searcher = FileSearcher();
                   try {
