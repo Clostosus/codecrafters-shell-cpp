@@ -21,7 +21,7 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
     readCharacterByCharacter(input, cmdManager);
     if (input.empty()) {cmdName = ""; return;}
 
-    // Argumente extrahieren
+    // extract Arguments from line
     std::string arg;
     std::string::iterator pos = input.begin();
 
@@ -79,7 +79,6 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
             if (currentChar == SPACE) {
                 if(nextChar != '\\') currentState = ParserState::OutsideArgument;// Argument finished
             } else if (currentChar == SINGLE) {
-                // Wechsel in Single Quotes innerhalb eines Arguments
                 currentState = ParserState::InsideSingleQuotes;
             } else if(currentChar == '\0') {
                 currentState = ParserState::OutsideArgument;

@@ -19,9 +19,8 @@ BuiltinCommand::BuiltinCommand(const std::string& name, const std::string& descr
     this->executeFunction = execute; this->validate = nullptr;
 }
 
-// Überprüft, ob die Argumente gültig sind
 bool BuiltinCommand::validateArguments(const std::vector<std::string>& args) const {
-    return validate ? validate(args) : true; // Falls keine Validierungsfunktion vorhanden ist, gilt es als gültig.
+    return validate ? validate(args) : true; // If there is no validate function, it should execute.
 }
 
 void BuiltinCommand::execute( std::vector<std::string>& args) const {

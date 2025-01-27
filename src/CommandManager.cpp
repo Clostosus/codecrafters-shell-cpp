@@ -24,7 +24,6 @@ void CommandManager::executeCommand(const std::string &name, std::vector<std::st
             builtinCmd->execute(arguments);
         } else { throw std::runtime_error("Invalid arguments for command: " + name); }
     } else {
-        // Externen Befehl ausführen
         try {
             const ExternalCommand external(name);
             external.execute(arguments);

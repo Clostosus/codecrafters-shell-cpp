@@ -7,7 +7,7 @@
 
 
 class FileSearcher {
-private:
+protected:
     std::vector<std::string> pathFilenames;
     void addPathDirsFilesToList();
     void addDirFilenamesToList(const std::string& DirPath);

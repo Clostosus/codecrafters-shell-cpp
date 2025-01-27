@@ -7,17 +7,15 @@
 
 #include "CommandInterface.h"
 
-// Eigene Exception-Klasse für den Fehlerfall, dass keine Ausführungsfunktion definiert ist
+// Own Exception in case a command has no defined execution function
 class CommandExecutionException final : public std::runtime_error {
-private:
+protected:
     std::string commandName;
 
 public:
-    // Konstruktor mit dem Command-Namen
     explicit CommandExecutionException(const std::string& name)
         : std::runtime_error("Execution function not defined for command: " + name), commandName(name) {}
 
-    // Zugriff auf den Command-Namen
     [[nodiscard]] std::string getCommandName() const {
         return commandName;
     }

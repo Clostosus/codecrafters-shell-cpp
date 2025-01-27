@@ -9,26 +9,23 @@
 
 
 void Builtins::registerBuiltinCommands(CommandManager & Manager) {
-    // Beispiel-Command registrieren (Exit)
+    // Register the exit command
     Manager.registerCommand(std::make_shared<BuiltinCommand>(BuiltinCommand(
         "exit",
         "Exits the console",
         {},
         [](const std::vector<std::string>& args) -> CommandOutput_t {CommandOutput_t output; std::exit(stoi(args.at(0))); },
         [](const std::vector<std::string>& args) {
-            // Validierung des Arguments
-              if (args.size() != 1) {
-                  return false;  // Nur ein Argument sollte übergeben werden
-              }
+              if (args.size() != 1) {return false;}
 
-              // Überprüfen, ob das Argument eine gültige Zahl ist
+              // Check if the argument is a valid number
               try {
                   std::stoi(args[0]);
-                  return true;  // Nur wenn das Argument int ist, gilt die Eingabe als gültig
+                  return true;
               } catch (const std::invalid_argument& ) {
-                  return false;  // Ungültiges Argument (keine gültige Zahl)
+                  return false;
               } catch (const std::out_of_range& ) {
-                  return false;  // Zahl ist außerhalb des gültigen Bereichs für int
+                  return false;
               }
         }
     )));

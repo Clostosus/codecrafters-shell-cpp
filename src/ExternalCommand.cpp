@@ -6,7 +6,6 @@
 void ExternalCommand::execute(std::vector<std::string> &args) const {
     std::string pathToFile;
     try {
-        // Suche den Pfad zur Datei
         FileSearcher searcher;
         pathToFile = searcher.getPathToFile(name);
     } catch (const FileSearcher::FileNotFoundException&) {
@@ -14,7 +13,6 @@ void ExternalCommand::execute(std::vector<std::string> &args) const {
     }
 
     try {
-        // Erzeuge und führe den SubprogramExecutor aus
         SubprogramExecutor executor(pathToFile, args);
         executor.execute();
     } catch (const SubprogramExecutor::SubprogramExecutorException& e) {
