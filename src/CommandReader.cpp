@@ -42,23 +42,16 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
     while (true) {
         c = static_cast<char>(getchar());
         if (c == '\n') {
-            return; // Eingabe abgeschlossen
+            return; // Input line completed
         } else if (c == '\t') {
-            // Autocompletion bei Tab-Taste
+            // Autocompletion for Tab Key
             std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
-            if (suggestions && !suggestions->empty()) {
-                if (suggestions->size() == 1) {
-                    while (!currentInput.empty()) {
-                        std::cout << "\b \b";
-                        currentInput.pop_back();
-                    }
-                    currentInput = suggestions->front();
-                    std::cout << "\r" << currentInput << '\n';  // Vorschlag sofort anzeigen, überschreibt den aktuellen Input
-                }
+            if (suggestions && suggestions->size() == 1) {
+                 currentInput = suggestions->front();
+                 std::cout << "\r" << currentInput;
             }
             delete suggestions;
-            continue; // Gehe zur nächsten Iteration, um die Eingabe zu verarbeiten
-        } else { // Normale Zeichen werden zum currentInput hinzugefügt
+        } else {
             currentInput += c;
         }
     }
