@@ -39,22 +39,22 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
 
 void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandManager &manager) {
     char c;
-    while (true) {
+    while(true) {
         c = static_cast<char>(getchar());
-        if (c == '\n') {
-            return; // Input line completed
+        if(c == '\n') {
+            break;
         } else if (c == '\t') {
             // Autocompletion for Tab Key
             std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
             if (suggestions && suggestions->size() == 1) {
                  currentInput = suggestions->front();
-                 std::cout << "\r" << currentInput;
+                 std::cout << "\r" << currentInput << std::flush;
             }
             delete suggestions;
-        } else {
+        } else if(c != '\n'){
             currentInput += c;
         }
-    }
+    };
 }
 
 

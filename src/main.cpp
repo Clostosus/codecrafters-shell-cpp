@@ -12,7 +12,7 @@ int main() {
 
     // Read-Eval-Process Loop
     while (true) {
-        std::cout << "$ ";
+        std::cout << "$ " << std::flush;
         try {
             std::string commandName;
             std::vector<std::string> arguments;
