@@ -9,6 +9,8 @@
 #define SINGLE '\''
 #define DOUBLE '"'
 #define BACKSLASH '\\'
+#define TAB '\t'
+#define NEWLINE '\n'
 
 CommandReader::CommandReader() {
     currentState = ParserState::OutsideArgument;
@@ -41,9 +43,9 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
     char c;
     while(true) {
         c = static_cast<char>(getchar());
-        if(c == '\n') {
+        if(c == NEWLINE) {
             break;
-        } else if (c == '\t') {
+        } else if (c == TAB) {
             // Autocompletion for Tab Key
             std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
             if (suggestions && suggestions->size() == 1) {
@@ -51,7 +53,7 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
                  std::cout << "\r" << currentInput << std::flush;
             }
             delete suggestions;
-        } else if(c != '\n'){
+        } else{
             currentInput += c;
         }
     };
@@ -77,12 +79,12 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
           break;
         case ParserState::InsideWord:
             if (currentChar == SPACE) {
-                if(nextChar != '\\') currentState = ParserState::OutsideArgument;// Argument finished
+                if(nextChar != BACKSLASH) currentState = ParserState::OutsideArgument;// Argument finished
             } else if (currentChar == SINGLE) {
                 currentState = ParserState::InsideSingleQuotes;
-            } else if(currentChar == '\0') {
+            } else if(currentChar == END) {
                 currentState = ParserState::OutsideArgument;
-            }else if (currentChar == '\\') {
+            }else if (currentChar == BACKSLASH) {
                 escapedNextChar = true;
             } else {
                 currentArgument.push_back(currentChar);
@@ -91,14 +93,14 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
         case ParserState::OutsideArgument:
             if (currentChar == SINGLE) {
                 currentState = ParserState::InsideSingleQuotes;
-            } else if (currentChar == '\0') {
+            } else if (currentChar == END) {
 
             } else if (currentChar == DOUBLE) {
                 currentState = ParserState::InsideDoubleQuotes;
-            } else if(currentChar == '\\') {
-                if(nextChar == '\\' || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE || nextChar == SPACE) {escapedNextChar = true;}
+            } else if(currentChar == BACKSLASH) {
+                if(nextChar == BACKSLASH || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE || nextChar == SPACE) {escapedNextChar = true;}
                 else{currentArgument.push_back(currentChar);}
-            }else if(currentChar != SPACE && currentChar!= '\\') {
+            }else if(currentChar != SPACE) {
                 currentArgument.push_back(currentChar);
                 currentState = ParserState::InsideWord;
             }
