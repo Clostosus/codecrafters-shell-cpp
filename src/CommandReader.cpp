@@ -52,7 +52,6 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
             if (suggestions && suggestions->size() == 1) {
                  currentInput = suggestions->front() + ' ';
                  std::cout << "\r$ " << currentInput << std::flush;
-                 c = ' ';
             }
             delete suggestions;
         } else{
@@ -81,11 +80,11 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
           }
           break;
         case ParserState::InsideWord:
-            if (currentChar == SPACE) {
-                if(nextChar != BACKSLASH) currentState = ParserState::OutsideArgument;// Argument finished
+            if (currentChar == SPACE ) {
+                currentState = ParserState::OutsideArgument;// Argument finished
             } else if (currentChar == SINGLE) {
                 currentState = ParserState::InsideSingleQuotes;
-            } else if(currentChar == END) {
+            } else if(currentChar == END ) {
                 currentState = ParserState::OutsideArgument;
             }else if (currentChar == BACKSLASH) {
                 escapedNextChar = true;
@@ -101,7 +100,10 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
             } else if (currentChar == DOUBLE) {
                 currentState = ParserState::InsideDoubleQuotes;
             } else if(currentChar == BACKSLASH) {
-                if(nextChar == BACKSLASH || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE || nextChar == SPACE) {escapedNextChar = true;}
+                if(nextChar == BACKSLASH || nextChar == '$' || nextChar == SINGLE || nextChar == DOUBLE || nextChar == SPACE) {
+                    escapedNextChar = true;
+                    currentState = ParserState::InsideWord; // Übergang erzwingen, damit der nächste Buchstabe zum Wort gehört
+                }
                 else{currentArgument.push_back(currentChar);}
             }else if(currentChar != SPACE) {
                 currentArgument.push_back(currentChar);
