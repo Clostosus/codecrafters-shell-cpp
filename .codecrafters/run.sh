@@ -9,4 +9,14 @@
 # Exit early if any commands fail
 set -e
 
-exec ./build/shell "$@"
+stream_characters() {
+  while IFS= read -r -s -n1 character; do
+    if [[ "$character" = "" ]]; then
+      printf $'\n'
+    else
+      printf "$character"
+    fi
+  done
+}
+
+exec ./build/shell "$@" < <(stream_characters 2>/dev/null)
