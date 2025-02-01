@@ -80,7 +80,13 @@ void CommandReader::handleStateTransition(const std::string &inputLine, std::str
     switch (currentState) {
       case ParserState::InsideSingleQuotes:
           if(currentChar == SINGLE) {
-              currentState = ParserState::OutsideArgument;
+              if(nextChar == SINGLE){currentState == InsideSingleQuotes;}
+              else if(previousChar == SINGLE) {
+                  currentState = ParserState::InsideSingleQuotes;
+              } else{
+                  if(nextChar == SPACE || nextChar == END){currentState = OutsideArgument;}
+                  else{currentState = InsideWord;}
+              }
           } else {
               currentArgument.push_back(currentChar);
           }
@@ -125,8 +131,7 @@ void CommandReader::handleStateTransition(const std::string &inputLine, std::str
                 if(nextChar == DOUBLE){currentState == InsideDoubleQuotes;}
                 else if(previousChar == DOUBLE) {
                     currentState = ParserState::InsideDoubleQuotes;
-                }
-                else{
+                } else{
                     if(nextChar == SPACE || nextChar == END){currentState = OutsideArgument;}
                     else{currentState = InsideWord;}
                 }
