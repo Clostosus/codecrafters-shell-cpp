@@ -44,6 +44,7 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
     while(true) {
         c = static_cast<char>(getchar());
         if(c == NEWLINE) {
+            std::cout << NEWLINE << std::flush;
             break;
         } else if (c == TAB) {
             // Autocompletion for Tab Key
@@ -55,6 +56,7 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
             delete suggestions;
         } else{
             currentInput += c;
+            std::cout << c << std::flush;
         }
     };
 }
