@@ -51,7 +51,7 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
             std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
             if (suggestions && suggestions->size() == 1) {
                  currentInput = suggestions->front() + ' ';
-                 std::cout << "\r " << currentInput << std::flush;
+                 std::cout << "\r$ " << currentInput << std::flush;
                  c = ' ';
             }
             delete suggestions;
