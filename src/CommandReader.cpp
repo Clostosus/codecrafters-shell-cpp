@@ -50,8 +50,9 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
             // Autocompletion for Tab Key
             std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
             if (suggestions && suggestions->size() == 1) {
-                 currentInput = suggestions->front();
+                 currentInput = suggestions->front() + ' ';
                  std::cout << "\r" << currentInput << std::flush;
+                 c = ' ';
             }
             delete suggestions;
         } else{
