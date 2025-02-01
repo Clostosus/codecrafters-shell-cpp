@@ -46,7 +46,7 @@ std::string FileSearcher::getPathToFile(const std::string & filename) {
     );
 
     if (it != pathFilenames.end()) { return *it.base();}
-    else{throw FileNotFoundException(filename);}
+    throw FileNotFoundException(filename);
 }
 
 void FileSearcher::printFilenames() const {
