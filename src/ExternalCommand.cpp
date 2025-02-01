@@ -8,7 +8,7 @@ void ExternalCommand::execute(std::vector<std::string> &args) const {
         FileSearcher searcher;
         searcher.getPathToFile(name);
     } catch (const FileSearcher::FileNotFoundException&) {
-        throw CommandNotFoundException("Command not found: " + name);
+        throw CommandNotFoundException(name);
     }
 
     try {
