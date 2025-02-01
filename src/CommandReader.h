@@ -11,8 +11,8 @@ protected:
    enum ParserState {OutsideArgument, InsideWord, InsideSingleQuotes, InsideDoubleQuotes};
    ParserState currentState;
    bool escapedNextChar;
-   void handleStateTransition(char currentChar, char nextChar, std::string& currentArgument);
-   static void readCharacterByCharacter(std::string &currentInput, CommandManager &manager);
+   void handleStateTransition(const std::string &inputLine,std::string::iterator pos, std::string& currentArgument);
+   static void readCharacterByCharacter( std::string &currentInput, CommandManager &manager);
 public:
    CommandReader();
    // Reads a line from stdin, fills Arguments vector and assigns cmdName, handles escape characters

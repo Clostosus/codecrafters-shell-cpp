@@ -29,7 +29,7 @@ void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &
 
     for (pos ; pos <= input.end()+1; pos++) {
         char c = *pos, nextChar = *(pos+1);
-        this->handleStateTransition(c,nextChar,arg);
+        this->handleStateTransition(input, pos, arg);
         if (currentState == ParserState::OutsideArgument && !arg.empty()) {
              arguments.push_back(arg);
              arg.clear();
@@ -63,7 +63,13 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
 
 
 
-void CommandReader::handleStateTransition(char currentChar, char nextChar, std::string &currentArgument) {
+void CommandReader::handleStateTransition(const std::string &inputLine, std::string::iterator pos, std::string &currentArgument) {
+
+    char previousChar = '\0';
+    if (pos != inputLine.begin()) { previousChar = *(pos - 1); }
+    char currentChar = static_cast<char>(*pos);
+    char nextChar = static_cast<char>(*(pos+1));
+
     if(currentState != ParserState::InsideSingleQuotes) {
         if(escapedNextChar) {
             escapedNextChar = false; currentArgument.push_back(currentChar);
@@ -116,7 +122,14 @@ void CommandReader::handleStateTransition(char currentChar, char nextChar, std::
                 else{currentArgument.push_back(currentChar);}
             }
             else if(currentChar == DOUBLE) {
-                if(nextChar != SPACE){currentState = InsideWord;}else{currentState = OutsideArgument;}
+                if(nextChar == DOUBLE){currentState == InsideDoubleQuotes;}
+                else if(previousChar == DOUBLE) {
+                    currentState = ParserState::InsideDoubleQuotes;
+                }
+                else{
+                    if(nextChar == SPACE || nextChar == END){currentState = OutsideArgument;}
+                    else{currentState = InsideWord;}
+                }
             }
             else { currentArgument.push_back(currentChar); }
             break;
