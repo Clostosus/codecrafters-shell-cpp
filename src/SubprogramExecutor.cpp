@@ -19,8 +19,7 @@ void SubprogramExecutor::execute(){
     int redirectStream = 1;
     execArgv.push_back(CmdName.data()); // Program name
     if (!args.empty()) {
-        int i = 0;
-        for (i=0; i < args.size(); i++) {
+        for(int i=0; i < args.size(); i++) {
             if(!redirectRequired) {
                 if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirectStream = STDOUT_FILENO;}
                 else if(args.at(i) == "2>"){redirectRequired = true; redirectStream = STDERR_FILENO;}
@@ -33,7 +32,6 @@ void SubprogramExecutor::execute(){
         }
         execArgv.push_back(nullptr); // Null-terminated
     }
-
     if(redirectRequired) {
         executeWithRedirect(redirectPath, redirectStream,append);
     }else {

@@ -4,7 +4,9 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include "BuiltinCommand.h"
+#include <unordered_map>
+
+#include "CommandInterface.h"
 
 class CommandManager {
     protected:

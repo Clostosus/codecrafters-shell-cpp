@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include "BuiltinCommand.h"
 #include "FileSearcher.h"
 #include "CommandNotFoundException.h"
 

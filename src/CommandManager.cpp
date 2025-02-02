@@ -3,6 +3,7 @@
 #include "CommandManager.h"
 
 #include "ArgumentsParser.h"
+#include "BuiltinCommand.h"
 #include "CommandNotFoundException.h"
 #include "ExternalCommand.h"
 #include "FileSearcher.h"
