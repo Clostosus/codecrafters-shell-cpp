@@ -44,7 +44,7 @@ void AbstractCommand::performRedirection(const RedirectionInfo &info, const Comm
             file.write(output.stdoutOutput.data(), static_cast<long>(output.stdoutOutput.size()) );
         }else if(info.redirStream == STDERR_FILENO) {
             file.write(output.stderrOutput.data(), static_cast<long>(output.stderrOutput.size()) );
-            std::cout << "Cout: " << output.stdoutOutput;
+            std::cout << output.stdoutOutput;
         }
 
         file.close();
