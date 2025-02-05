@@ -22,7 +22,7 @@ public:
     void execute(std::vector<std::string>& args) const override {
         const RedirectionInfo redirInfo = parseRedirection(args); // redir parameters get removed from args while parsing
 
-        const CommandOutput_t output = runWithoutRedirection(args);
+        const CommandOutput_t output = executeWithoutRedirection(args);
 
         if(redirInfo.required) {
             performRedirection(redirInfo, output);
@@ -33,7 +33,7 @@ public:
     }
 
 protected:
-    virtual CommandOutput_t runWithoutRedirection(std::vector<std::string>& args) const = 0;
+    virtual CommandOutput_t executeWithoutRedirection(std::vector<std::string>& args) const = 0;
 
     // Fills redirection info and removes the redirection arguments
     static RedirectionInfo parseRedirection(std::vector<std::string>& args);

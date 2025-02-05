@@ -5,7 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "CommandInterface.h"
+#include "AbstractCommand.h"
+#include "CommandOutput.h"
 
 // Own Exception in case a command has no defined execution function
 class CommandExecutionException final : public std::runtime_error {
@@ -21,12 +22,7 @@ public:
     }
 };
 
-struct CommandOutput_t {
-    std::string stdoutOutput;
-    std::string stderrOutput;
-};
-
-class BuiltinCommand : public CommandInterface{
+class BuiltinCommand : public AbstractCommand{
 protected:
     std::string name;
     std::string description;
@@ -35,6 +31,7 @@ protected:
     std::function<bool(const std::vector<std::string>&)> validate;
 
     void executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string>& args, int rediredStream, bool append) const;
+    CommandOutput_t executeWithoutRedirection(std::vector<std::string> &args) const override;
 public:
     BuiltinCommand(const std::string &name, const std::string &description, const std::vector<std::string> &arguments,
             const std::function<CommandOutput_t(const std::vector<std::string> &args)> &execute,
@@ -43,7 +40,7 @@ public:
     BuiltinCommand(const std::string& name, const std::string& description, const std::function<CommandOutput_t(const std::vector<std::string>& args)> &execute);
 
     [[nodiscard]] bool validateArguments(const std::vector<std::string>& args) const;
-    void execute(std::vector<std::string> &args) const override;
+    // void execute(std::vector<std::string> &args) const override;
 
     [[nodiscard]] std::string getName()const override;
     [[nodiscard]] std::string getDescription()const override;

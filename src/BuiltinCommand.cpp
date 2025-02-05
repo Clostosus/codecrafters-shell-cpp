@@ -22,7 +22,7 @@ BuiltinCommand::BuiltinCommand(const std::string& name, const std::string& descr
 bool BuiltinCommand::validateArguments(const std::vector<std::string>& args) const {
     return validate ? validate(args) : true; // If there is no validate function, it should execute.
 }
-
+/*
 void BuiltinCommand::execute( std::vector<std::string>& args) const {
     if (! executeFunction) {throw std::runtime_error("No execution function defined for this command.");}
     bool redirectRequired = false, append = false;
@@ -46,11 +46,9 @@ void BuiltinCommand::execute( std::vector<std::string>& args) const {
    if(redirectRequired) {
       executeBuiltinWithRedirect(redirectPath,args, redirStream,append);
    }else {
-      auto [stdoutOutput, stderrOutput] = executeFunction(args);
-      if (!stdoutOutput.empty()){ std::cout << stdoutOutput; }
-      if(!stderrOutput.empty()){ std::cout << stderrOutput; }
+      runWithoutRedirection(args);
    }
-}
+}*/
 
 void BuiltinCommand::executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string> &args, int rediredStream, bool append) const {
     std::fstream file;
@@ -77,6 +75,12 @@ void BuiltinCommand::executeBuiltinWithRedirect(const std::string &redirPath, co
     }
     file.close();
 }
+
+CommandOutput_t BuiltinCommand::executeWithoutRedirection(std::vector<std::string> &args) const {
+    CommandOutput_t outp = executeFunction(args);
+    return outp;
+}
+
 
 std::string BuiltinCommand::getDescription() const{
     return this->description;

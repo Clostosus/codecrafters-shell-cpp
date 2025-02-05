@@ -17,9 +17,10 @@ RedirectionInfo AbstractCommand::parseRedirection(std::vector<std::string> &args
                 else if(args[i] == "2>>"){redirection.required = true; redirection.redirStream = STDERR_FILENO; redirection.append = true;}
 
                 // Delete redir Argument
-                if(redirection.required){ args.erase(args.begin()+i); }
+                if(redirection.required){ args.erase(args.begin()+i); i--;}
             }else {
                 redirection.redirectPath = args.at(i);
+                args.erase(args.begin()+i); i--;
             }
         }
     }
@@ -41,10 +42,9 @@ void AbstractCommand::performRedirection(const RedirectionInfo &info, const Comm
 
         if(info.redirStream == STDOUT_FILENO) {
             file.write(output.stdoutOutput.data(), static_cast<long>(output.stdoutOutput.size()) );
-            std::cerr << output.stderrOutput;
         }else if(info.redirStream == STDERR_FILENO) {
             file.write(output.stderrOutput.data(), static_cast<long>(output.stderrOutput.size()) );
-            std::cout << output.stdoutOutput;
+            std::cout << "Cout: " << output.stdoutOutput;
         }
 
         file.close();
