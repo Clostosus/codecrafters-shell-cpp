@@ -36,14 +36,16 @@ void SubprogramExecutor::execute(){
         executeWithRedirect(redirectPath, redirectStream,append);
     }else {
         try {
-            std::cout << executeNoRedirect(execArgv);
+            const CommandOutput_t outp = executeNoRedirect(execArgv);
+            std::cout << outp.stdoutOutput;
+            std::cerr << outp.stderrOutput;
         } catch (SubprogramExecutorException &e) {
             std::cout << e.what() << std::endl;
         }
     }
 }
 
-std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & execArgv) const {
+CommandOutput_t SubprogramExecutor::executeNoRedirect(const std::vector<char *> & execArgv) const {
     // create Pipe "stringstream"
     int stdoutPipe[2],stderrPipe[2];
     if (pipe(stdoutPipe) == -1 || pipe(stderrPipe) == -1) { throw std::runtime_error("Failed to create pipe"); }
@@ -89,8 +91,7 @@ std::string SubprogramExecutor::executeNoRedirect(const std::vector<char *> & ex
         } else if (WIFSIGNALED(status)) {
             throw SubprogramExecutorException("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
         }
-        std::string result = stdoutOutput.str();
-        return result;
+        return {stdoutOutput.str(), stderrOutput.str()};
     } else { // fork failed
         throw std::runtime_error("Failed to fork process");
     }
