@@ -22,33 +22,6 @@ BuiltinCommand::BuiltinCommand(const std::string& name, const std::string& descr
 bool BuiltinCommand::validateArguments(const std::vector<std::string>& args) const {
     return validate ? validate(args) : true; // If there is no validate function, it should execute.
 }
-/*
-void BuiltinCommand::execute( std::vector<std::string>& args) const {
-    if (! executeFunction) {throw std::runtime_error("No execution function defined for this command.");}
-    bool redirectRequired = false, append = false;
-    std::string redirectPath; int redirStream = 1;
-   if (!args.empty()) {
-     int breakNum = -1;
-     for (int i=0; i < args.size(); i++) {
-      if(!redirectRequired) {
-       if(args.at(i) == ">" || args[i] == "1>"){redirectRequired = true; redirStream = STDOUT_FILENO; breakNum = i;}
-       else if(args[i] == "2>"){redirectRequired = true; redirStream = STDERR_FILENO; breakNum = i; }
-       else if(args[i] == "1>>" || args[i] == ">>"){redirectRequired = true; redirStream = STDOUT_FILENO; breakNum = i; append = true;}
-       else if(args[i] == "2>>"){redirectRequired = true, redirStream = STDERR_FILENO; breakNum = i; append = true;}
-      }else {redirectPath = args.at(i);}
-     }
-     if(breakNum != -1) { // remove redirect and all following from arguments
-      for(int j = static_cast<int>(args.size())-1; j >= breakNum; j--) {
-       args.erase(args.begin()+j);
-      }
-     }
-   }
-   if(redirectRequired) {
-      executeBuiltinWithRedirect(redirectPath,args, redirStream,append);
-   }else {
-      runWithoutRedirection(args);
-   }
-}*/
 
 void BuiltinCommand::executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string> &args, int rediredStream, bool append) const {
     std::fstream file;
