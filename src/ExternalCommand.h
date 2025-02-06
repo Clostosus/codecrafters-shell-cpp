@@ -1,21 +1,21 @@
 #ifndef EXTERNALCOMMAND_H
 #define EXTERNALCOMMAND_H
-#include "CommandInterface.h"
+#include "AbstractCommand.h"
 #include "SubprogramExecutor.h"
+#include "CommandOutput.h"
 
 
-class ExternalCommand final : public CommandInterface {
+class ExternalCommand : public AbstractCommand {
 protected:
-    std::string name;
-    std::string description;
+    std::string CmdName;
+
+    CommandOutput_t executeWithoutRedirection(std::vector<std::string> &args) const override;
 public:
-    explicit ExternalCommand(const std::string& name, const std::string& description = "")
-        : name(name), description(description) {}
+    explicit ExternalCommand(const std::string &name);
 
-    void execute(std::vector<std::string>& args) const override;
+    // void execute(std::vector<std::string>& args) const override;
 
-    [[nodiscard]] std::string getName() const override { return name; }
-    [[nodiscard]] std::string getDescription() const override { return description; }
+    [[nodiscard]] std::string getName() const override { return CmdName; }
 };
 
 

@@ -9,7 +9,6 @@ public:
     virtual ~CommandInterface() = default;
     virtual void execute(std::vector<std::string>& args) const = 0;
     [[nodiscard]] virtual std::string getName() const = 0;
-    [[nodiscard]] virtual std::string getDescription() const = 0;
 };
 
 

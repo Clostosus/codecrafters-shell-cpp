@@ -1,6 +1,7 @@
 #ifndef ABSTRACTCOMMAND_H
 #define ABSTRACTCOMMAND_H
 
+#include <stdexcept>
 #include <unistd.h>
 
 #include "CommandInterface.h"
@@ -14,6 +15,19 @@ struct RedirectionInfo {
     bool append = false;
 };
 
+// Own Exception in case a command has no defined execution function or execution failed.
+class CommandExecutionException final : public std::runtime_error {
+protected:
+    std::string commandName;
+
+public:
+    explicit CommandExecutionException(const std::string& name)
+        : std::runtime_error("Execution failed for command: " + name), commandName(name) {}
+
+    [[nodiscard]] std::string getCommandName() const {
+        return commandName;
+    }
+};
 
 class AbstractCommand : public CommandInterface {
 public:
