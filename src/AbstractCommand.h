@@ -21,10 +21,6 @@ class CommandExecutionException final : public std::runtime_error {
 public:
     explicit CommandExecutionException(const std::string& message)
         : std::runtime_error( message) {}
-
-    [[nodiscard]] std::string getCommandName() const {
-        return this->what();
-    }
 };
 
 class AbstractCommand : public CommandInterface {
