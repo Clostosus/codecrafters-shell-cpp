@@ -8,7 +8,7 @@ void AbstractCommand::execute(std::vector<std::string> &args) const {
     try {
         output = executeWithoutRedirection(args);
     } catch (CommandExecutionException &e) {
-        std::cerr << e.what();
+        std::cout << e.what();
     }
 
 
@@ -64,7 +64,7 @@ void AbstractCommand::performRedirection(const RedirectionInfo &info, const Comm
             file.write(output.stdoutOutput.data(), static_cast<long>(output.stdoutOutput.size()) );
         }else if(info.redirStream == STDERR_FILENO) {
             file.write(output.stderrOutput.data(), static_cast<long>(output.stderrOutput.size()) );
-            std::cout << output.stdoutOutput;
+            if(!output.stdoutOutput.empty()) std::cout << output.stdoutOutput;
         }
 
         file.close();
