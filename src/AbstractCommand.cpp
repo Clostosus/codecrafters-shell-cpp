@@ -4,13 +4,8 @@
 
 void AbstractCommand::execute(std::vector<std::string> &args) const {
     const RedirectionInfo redirInfo = parseRedirection(args); // redir parameters get removed from args while parsing
-    CommandOutput_t output;
-    try {
-        output = executeWithoutRedirection(args);
-    } catch (CommandExecutionException &e) {
-        std::cout << e.getMessage();
-    }
 
+    const CommandOutput_t output = executeWithoutRedirection(args);
 
     if(redirInfo.required) {
         performRedirection(redirInfo, output);
@@ -49,11 +44,11 @@ RedirectionInfo AbstractCommand::parseRedirection(std::vector<std::string> &args
 
 void AbstractCommand::performRedirection(const RedirectionInfo &info, const CommandOutput_t &output) {
     if(info.required) {
-        std::fstream file;
+        std::ofstream file;
         if(!info.append) {
-            file = std::fstream(info.redirectPath, std::ios::out);
+            file.open(info.redirectPath, std::ios::out);
         }else {
-            file = std::fstream(info.redirectPath, std::ios::app);
+            file.open(info.redirectPath, std::ios::app);
         }
 
         if(!file.is_open()) {
@@ -62,6 +57,7 @@ void AbstractCommand::performRedirection(const RedirectionInfo &info, const Comm
 
         if(info.redirStream == STDOUT_FILENO) {
             file.write(output.stdoutOutput.data(), static_cast<long>(output.stdoutOutput.size()) );
+            if(!output.stderrOutput.empty()) std::cout << output.stderrOutput;
         }else if(info.redirStream == STDERR_FILENO) {
             file.write(output.stderrOutput.data(), static_cast<long>(output.stderrOutput.size()) );
             if(!output.stdoutOutput.empty()) std::cout << output.stdoutOutput;

@@ -84,10 +84,10 @@ CommandOutput_t ExternalCommand::executeWithoutRedirection(std::vector<std::stri
         waitpid(pid, &status, 0); // wait for child process to finish
         if (WIFEXITED(status)) {
             if (WEXITSTATUS(status) != 0) {
-                throw CommandExecutionException( stderrOutput.str());
+                // react on it
             }
         } else if (WIFSIGNALED(status)) {
-            throw CommandExecutionException("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
+            // react on it
         }
         return {stdoutOutput.str(), stderrOutput.str()};
     } else { // fork failed
