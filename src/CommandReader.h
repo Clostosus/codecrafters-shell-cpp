@@ -13,6 +13,7 @@ protected:
    bool escapedNextChar;
    void handleStateTransition(const std::string &inputLine,std::string::iterator pos, std::string& currentArgument);
    static void readCharacterByCharacter( std::string &currentInput, CommandManager &manager);
+   static void autoComplete(std::string &currentInput, CommandManager &manager);
 public:
    CommandReader();
    // Reads a line from stdin, fills Arguments vector and assigns cmdName, handles escape characters

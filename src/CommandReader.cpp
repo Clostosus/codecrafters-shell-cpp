@@ -46,19 +46,22 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
         if(c == NEWLINE) {
             std::cout << NEWLINE << std::flush;
             break;
-        } else if (c == TAB) {
-            // Autocompletion for Tab Key
-            std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
-            if (suggestions && suggestions->size() == 1) {
-                 currentInput = suggestions->front() + ' ';
-                 std::cout << "\r$ " << currentInput << std::flush;
-            }
-            delete suggestions;
+        } else if (c == TAB) { // Autocompletion for Tab Key
+            autoComplete(currentInput, manager);
         } else{
             currentInput += c;
             std::cout << c << std::flush;
         }
     };
+}
+
+void CommandReader::autoComplete(std::string &currentInput, CommandManager &manager) {
+    std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
+    if (suggestions && suggestions->size() == 1) {
+        currentInput = suggestions->front() + ' ';
+        std::cout << "\r$ " << currentInput << std::flush;
+    }
+    delete suggestions;
 }
 
 
