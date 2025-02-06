@@ -1,7 +1,6 @@
 #ifndef EXTERNALCOMMAND_H
 #define EXTERNALCOMMAND_H
 #include "AbstractCommand.h"
-#include "SubprogramExecutor.h"
 #include "CommandOutput.h"
 
 
