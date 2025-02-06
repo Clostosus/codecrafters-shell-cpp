@@ -4,8 +4,13 @@
 
 void AbstractCommand::execute(std::vector<std::string> &args) const {
     const RedirectionInfo redirInfo = parseRedirection(args); // redir parameters get removed from args while parsing
+    CommandOutput_t output;
+    try {
+        output = executeWithoutRedirection(args);
+    } catch (CommandExecutionException &e) {
+        std::cerr << e.what() << std::endl;
+    }
 
-    const CommandOutput_t output = executeWithoutRedirection(args);
 
     if(redirInfo.required) {
         performRedirection(redirInfo, output);
