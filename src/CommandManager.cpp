@@ -29,7 +29,7 @@ void CommandManager::executeCommand(const std::string &name, std::vector<std::st
             const ExternalCommand external(name);
             external.execute(arguments);
         } catch (const CommandNotFoundException& e) {
-            std::cout << e.what();
+            std::cout << e.what() << std::endl;
         }
     }
 }

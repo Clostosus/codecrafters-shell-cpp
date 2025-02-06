@@ -8,7 +8,7 @@ void AbstractCommand::execute(std::vector<std::string> &args) const {
     try {
         output = executeWithoutRedirection(args);
     } catch (CommandExecutionException &e) {
-        throw CommandExecutionException(e);
+        std::cout << e.what();
     }
 
 
