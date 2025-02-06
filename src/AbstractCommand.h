@@ -17,15 +17,13 @@ struct RedirectionInfo {
 
 // Own Exception in case a command has no defined execution function or execution failed.
 class CommandExecutionException final : public std::runtime_error {
-protected:
-    std::string commandName;
-
+ std::string msg;
 public:
-    explicit CommandExecutionException(const std::string& name)
-        : std::runtime_error("Execution failed for command: " + name), commandName(name) {}
+    explicit CommandExecutionException(const std::string& message)
+        : std::runtime_error( message) {}
 
     [[nodiscard]] std::string getCommandName() const {
-        return commandName;
+        return this->what();
     }
 };
 
