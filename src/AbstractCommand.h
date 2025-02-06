@@ -20,7 +20,8 @@ class CommandExecutionException final : public std::runtime_error {
  std::string msg;
 public:
     explicit CommandExecutionException(const std::string& message)
-        : std::runtime_error( message) {}
+        : std::runtime_error( message) {msg = message;}
+    [[nodiscard]] std::string getMessage() const {return msg;}
 };
 
 class AbstractCommand : public CommandInterface {
