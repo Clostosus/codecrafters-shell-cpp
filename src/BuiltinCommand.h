@@ -30,7 +30,6 @@ protected:
     std::function<CommandOutput_t(const std::vector<std::string>& args)> executeFunction;
     std::function<bool(const std::vector<std::string>&)> validate;
 
-    void executeBuiltinWithRedirect(const std::string &redirPath, const std::vector<std::string>& args, int rediredStream, bool append) const;
     CommandOutput_t executeWithoutRedirection(std::vector<std::string> &args) const override;
 public:
     BuiltinCommand(const std::string &name, const std::string &description, const std::vector<std::string> &arguments,
@@ -40,7 +39,6 @@ public:
     BuiltinCommand(const std::string& name, const std::string& description, const std::function<CommandOutput_t(const std::vector<std::string>& args)> &execute);
 
     [[nodiscard]] bool validateArguments(const std::vector<std::string>& args) const;
-    // void execute(std::vector<std::string> &args) const override;
 
     [[nodiscard]] std::string getName()const override;
     [[nodiscard]] std::string getDescription()const override;

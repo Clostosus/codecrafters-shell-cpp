@@ -1,8 +1,6 @@
 #ifndef ABSTRACTCOMMAND_H
 #define ABSTRACTCOMMAND_H
 
-#include <fstream>
-#include <iostream>
 #include <unistd.h>
 
 #include "CommandInterface.h"
@@ -19,18 +17,7 @@ struct RedirectionInfo {
 
 class AbstractCommand : public CommandInterface {
 public:
-    void execute(std::vector<std::string>& args) const override {
-        const RedirectionInfo redirInfo = parseRedirection(args); // redir parameters get removed from args while parsing
-
-        const CommandOutput_t output = executeWithoutRedirection(args);
-
-        if(redirInfo.required) {
-            performRedirection(redirInfo, output);
-        } else {
-            if(!output.stdoutOutput.empty()) { std::cout << output.stdoutOutput; }
-            if(!output.stderrOutput.empty()) { std::cerr << output.stderrOutput; }
-        }
-    }
+    void execute(std::vector<std::string>& args) const override;
 
 protected:
     virtual CommandOutput_t executeWithoutRedirection(std::vector<std::string>& args) const = 0;
