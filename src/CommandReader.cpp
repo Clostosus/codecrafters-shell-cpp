@@ -60,6 +60,8 @@ void CommandReader::autoComplete(std::string &currentInput, CommandManager &mana
     if (suggestions && suggestions->size() == 1) {
         currentInput = suggestions->front() + ' ';
         std::cout << "\r$ " << currentInput << std::flush;
+    }else if(suggestions->empty()) {
+        std::cout << '\a' << std::flush;
     }
     delete suggestions;
 }
