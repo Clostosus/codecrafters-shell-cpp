@@ -84,7 +84,7 @@ CommandOutput_t ExternalCommand::executeWithoutRedirection(std::vector<std::stri
         waitpid(pid, &status, 0); // wait for child process to finish
         if (WIFEXITED(status)) {
             if (WEXITSTATUS(status) != 0) {
-                throw CommandExecutionException("Subprogram exited with error code: " + std::to_string(WEXITSTATUS(status)));
+                throw CommandExecutionException( stderrOutput.str());
             }
         } else if (WIFSIGNALED(status)) {
             throw CommandExecutionException("Subprogram terminated by signal: " + std::to_string(WTERMSIG(status)));
