@@ -13,8 +13,6 @@ protected:
 public:
     explicit ExternalCommand(const std::string &name);
 
-    // void execute(std::vector<std::string>& args) const override;
-
     [[nodiscard]] std::string getName() const override { return CmdName; }
 };
 

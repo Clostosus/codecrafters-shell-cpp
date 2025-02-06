@@ -10,23 +10,6 @@ ExternalCommand::ExternalCommand(const std::string &name) {
     this->CmdName = name;
 }
 
-/*
-void ExternalCommand::execute(std::vector<std::string> &args) const {
-    try {
-        FileSearcher searcher;
-        searcher.getPathToFile(CmdName);
-    } catch (const FileSearcher::FileNotFoundException&) {
-        throw CommandNotFoundException(CmdName);
-    }
-
-    try {
-        SubprogramExecutor executor(CmdName, args);
-        executor.execute();
-    } catch (const SubprogramExecutor::SubprogramExecutorException& e) {
-        std::cerr << e.what() << std::endl;
-    }
-}*/
-
 CommandOutput_t ExternalCommand::executeWithoutRedirection(std::vector<std::string> &args) const {
 
     try {
