@@ -33,10 +33,10 @@ void FileSearcher::addDirFilenamesToList(const std::string& DirPath) {
 
 FileSearcher::FileSearcher() {
     this->pathFilenames = std::vector<std::string>();
+    addPathDirsFilesToList();
 }
 
 std::string FileSearcher::getPathToFile(const std::string & filename) {
-    addPathDirsFilesToList();
 
     const auto it = std::ranges::find_if(pathFilenames ,
                                          [&filename](const std::string& str) {

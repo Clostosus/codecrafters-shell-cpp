@@ -56,14 +56,14 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
 }
 
 void CommandReader::autoComplete(std::string &currentInput, CommandManager &manager) {
-    std::vector<std::string> * suggestions = manager.getAllNamesWithPrefix(currentInput);
-    if (suggestions && suggestions->size() == 1) {
-        currentInput = suggestions->front() + ' ';
+    std::vector<std::string> * builtinSuggestions = manager.getAllBuiltinsWithPrefix(currentInput);
+    if (builtinSuggestions && builtinSuggestions->size() == 1) {
+        currentInput = builtinSuggestions->front() + ' ';
         std::cout << "\r$ " << currentInput << std::flush;
-    }else if(suggestions->empty()) {
+    }else if(builtinSuggestions->empty()) {
         std::cout << '\a' << std::flush;
     }
-    delete suggestions;
+    delete builtinSuggestions;
 }
 
 

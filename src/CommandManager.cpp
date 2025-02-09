@@ -43,7 +43,7 @@ void CommandManager::printAllCmdNames(std::ostringstream &outputstream) {
     }
 }
 
-std::vector<std::string> * CommandManager::getAllNamesWithPrefix(const std::string &prefix) const {
+std::vector<std::string> * CommandManager::getAllBuiltinsWithPrefix(const std::string &prefix) const {
     auto * names = new std::vector<std::string>;
 
     for (const auto& pair : this->commands) {
