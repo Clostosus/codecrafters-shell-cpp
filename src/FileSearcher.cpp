@@ -50,7 +50,14 @@ std::string FileSearcher::getPathToFile(const std::string & filename) {
 }
 
 std::vector<std::string> FileSearcher::getPathFilenames() const {
-    return pathFilenames;
+    std::vector<std::string> binaryNames(pathFilenames.capacity());
+    for (size_t i = 0; i < pathFilenames.size(); i++) {
+      std::string cmdpath = pathFilenames[i];
+      const size_t pos = cmdpath.find_last_of('/');
+      if (pos != std::string::npos) {binaryNames[i] = cmdpath.substr(pos + 1);}
+      else { binaryNames[i] = cmdpath;}
+    }
+    return binaryNames;
 }
 
 std::string FileSearcher::getHomedir() {

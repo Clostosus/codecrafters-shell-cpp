@@ -72,7 +72,7 @@ std::vector<std::string> * CommandManager::getAllExternalsWithPrefix(const std::
     std::vector<std::string> AllNames = searcher.getPathFilenames();
     std::vector<std::string> * Matches = new std::vector<std::string>(64);
     for(const std::string& name: AllNames) {
-        if(name.rfind(prefix, 0) != 0) {
+        if(name.find(prefix, 0) != std::string::npos) {
             Matches->push_back(name);
         }
     }
