@@ -49,10 +49,8 @@ std::string FileSearcher::getPathToFile(const std::string & filename) {
     throw FileNotFoundException(filename);
 }
 
-void FileSearcher::printFilenames() const {
-    for (const auto& filename : this->pathFilenames) {
-        std::cout << filename << std::endl;
-    }
+std::vector<std::string> FileSearcher::getPathFilenames() const {
+    return pathFilenames;
 }
 
 std::string FileSearcher::getHomedir() {

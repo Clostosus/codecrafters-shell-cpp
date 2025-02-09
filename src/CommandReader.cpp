@@ -61,7 +61,14 @@ void CommandReader::autoComplete(std::string &currentInput, CommandManager &mana
         currentInput = builtinSuggestions->front() + ' ';
         std::cout << "\r$ " << currentInput << std::flush;
     }else if(builtinSuggestions->empty()) {
-        std::cout << '\a' << std::flush;
+        std::vector<std::string> * externalSuggestions = manager.getAllExternalsWithPrefix(currentInput);
+        if (externalSuggestions && externalSuggestions->size() == 1) {
+            currentInput = externalSuggestions->front() + ' ';
+            std::cout << "\r$ " << currentInput << std::flush;
+        }else {
+            std::cout << '\a' << std::flush;
+        }
+        delete externalSuggestions;
     }
     delete builtinSuggestions;
 }

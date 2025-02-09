@@ -43,6 +43,17 @@ void CommandManager::printAllCmdNames(std::ostringstream &outputstream) {
     }
 }
 
+
+bool CommandManager::existsBuiltinCommand(const std::string &name) const {
+    if(const auto it = commands.find(name); it != commands.end()) {
+        // Check if command is a builtin type command
+        if (dynamic_cast<BuiltinCommand*>(it->second.get()) != nullptr) {
+            return true;
+        }
+    }
+    return false;
+}
+
 std::vector<std::string> * CommandManager::getAllBuiltinsWithPrefix(const std::string &prefix) const {
     auto * names = new std::vector<std::string>;
 
@@ -55,14 +66,15 @@ std::vector<std::string> * CommandManager::getAllBuiltinsWithPrefix(const std::s
     return names;
 }
 
-
-bool CommandManager::existsBuiltinCommand(const std::string &name) const {
-    if(const auto it = commands.find(name); it != commands.end()) {
-        // Check if command is a builtin type command
-        if (dynamic_cast<BuiltinCommand*>(it->second.get()) != nullptr) {
-            return true;
+std::vector<std::string> * CommandManager::getAllExternalsWithPrefix(const std::string &prefix) const {
+    const FileSearcher searcher;
+    // ReSharper disable once CppUseAuto
+    std::vector<std::string> AllNames = searcher.getPathFilenames();
+    std::vector<std::string> * Matches = new std::vector<std::string>(64);
+    for(const std::string& name: AllNames) {
+        if(name.rfind(prefix, 0) != 0) {
+            Matches->push_back(name);
         }
     }
-    return false;
+    return Matches;
 }
-
