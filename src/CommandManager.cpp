@@ -54,26 +54,26 @@ bool CommandManager::existsBuiltinCommand(const std::string &name) const {
     return false;
 }
 
-std::vector<std::string> * CommandManager::getAllBuiltinsWithPrefix(const std::string &prefix) const {
-    auto * names = new std::vector<std::string>;
+std::vector<std::string> CommandManager::getAllBuiltinsWithPrefix(const std::string &prefix) const {
+    std::vector<std::string> names;
 
     for (const auto& pair : this->commands) {
         const std::string& key = pair.first;
         if ( key.find(prefix) == 0) {
-            names->push_back(key);
+            names.push_back(key);
         }
     }
     return names;
 }
 
-std::vector<std::string> * CommandManager::getAllExternalsWithPrefix(const std::string &prefix) const {
+std::vector<std::string> CommandManager::getAllExternalsWithPrefix(const std::string &prefix) const {
     const FileSearcher * searcher = FileSearcher::getInstance();
     // ReSharper disable once CppUseAuto
     std::vector<std::string> AllNames = searcher->getExecutablesFromPath();
-    auto * Matches = new std::vector<std::string>;
+    std::vector<std::string> Matches;
     for(const std::string& name: AllNames) {
-        if(name.find(prefix, 0) != std::string::npos) {
-            Matches->push_back(name);
+        if(name.find(prefix) == 0) {
+            Matches.push_back(name);
         }
     }
     return Matches;

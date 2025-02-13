@@ -56,27 +56,25 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
 }
 
 void CommandReader::autoComplete(std::string &currentInput, CommandManager &manager) {
-    std::vector<std::string> * builtinSuggestions = manager.getAllBuiltinsWithPrefix(currentInput);
-    if (builtinSuggestions && builtinSuggestions->size() == 1) {
-        currentInput = builtinSuggestions->front() + ' ';
+    std::vector<std::string> builtinSuggestions = manager.getAllBuiltinsWithPrefix(currentInput);
+    if (builtinSuggestions.size() == 1) {
+        currentInput = builtinSuggestions.front() + ' ';
         std::cout << "\r$ " << currentInput << std::flush;
-    }else if(builtinSuggestions->empty()) {
-        std::vector<std::string> * externalSuggestions = manager.getAllExternalsWithPrefix(currentInput);
-        if (externalSuggestions && externalSuggestions->size() == 1) {
-            currentInput = externalSuggestions->front() + ' ';
+    }else if(builtinSuggestions.empty()) {
+        std::vector<std::string> externalSuggestions = manager.getAllExternalsWithPrefix(currentInput);
+        if (externalSuggestions.size() == 1) {
+            currentInput = externalSuggestions.front() + ' ';
             std::cout << "\r$ " << currentInput << std::flush;
-        }else if(externalSuggestions->size() > 1) {
+        }else if(externalSuggestions.size() > 1) {
             std::cout << '\n' << "\r" << std::flush;
-            for (std::string & suggestion : *externalSuggestions ) {
+            for (std::string & suggestion : externalSuggestions ) {
                 std::cout << suggestion << ' ';
             }
             std::cout << '\n' << "\r$" << currentInput << std::flush;
         }else{
             std::cout << '\a' << std::flush;
         }
-        delete externalSuggestions;
     }
-    delete builtinSuggestions;
 }
 
 

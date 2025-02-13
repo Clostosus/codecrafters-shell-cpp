@@ -16,8 +16,8 @@ public:
      void executeCommand(const std::string& name, std::vector<std::string>& arguments) const;
     void printAllCmdNames(std::ostringstream & outputstream);
     bool existsBuiltinCommand(const std::string &name) const;
-    std::vector<std::string> * getAllBuiltinsWithPrefix(const std::string &prefix) const;
-    std::vector<std::string> * getAllExternalsWithPrefix(const std::string &prefix) const;
+    std::vector<std::string> getAllBuiltinsWithPrefix(const std::string &prefix) const;
+    std::vector<std::string> getAllExternalsWithPrefix(const std::string &prefix) const;
 };
 
 #endif //COMMANDMANAGER_H
