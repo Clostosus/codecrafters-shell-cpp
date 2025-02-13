@@ -13,8 +13,8 @@ ExternalCommand::ExternalCommand(const std::string &name) {
 CommandOutput_t ExternalCommand::executeWithoutRedirection(std::vector<std::string> &args) const {
 
     try {
-        FileSearcher searcher;
-        searcher.getPathToFile(CmdName);
+        FileSearcher * searcher = FileSearcher::getInstance();
+        searcher->getPathToFile(CmdName);
     } catch (const FileSearcher::FileNotFoundException&) {
         throw CommandNotFoundException(CmdName);
     }

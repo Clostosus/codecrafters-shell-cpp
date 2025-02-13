@@ -100,9 +100,9 @@ void Builtins::registerBuiltinCommands(CommandManager & Manager) {
                 oss << searchedCmdName << " is a shell builtin"   << std::endl;
             } catch (CommandNotFoundException&) {
                 if(args.at(0) != "type") {
-                  auto searcher = FileSearcher();
+                  auto searcher = FileSearcher::getInstance();
                   try {
-                      std::string exePath = searcher.getPathToFile(searchedCmdName);
+                      std::string exePath = searcher->getPathToFile(searchedCmdName);
                       oss << searchedCmdName << " is " << exePath << std::endl;
                   } catch (FileSearcher::FileNotFoundException &filefindError) {
                       oss << filefindError.what() << ": not found" << std::endl;

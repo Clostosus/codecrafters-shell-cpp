@@ -5,6 +5,16 @@
 #include <ostream>
 #include <sys/stat.h>
 
+FileSearcher * FileSearcher::instance = nullptr;
+
+FileSearcher * FileSearcher::getInstance() {
+    if(instance == nullptr) {
+        instance = new FileSearcher();
+    }
+    return instance;
+}
+
+
 void FileSearcher::addPathDirsFilesToList() {
     const std::string BigPath = getenv("PATH");
     std::stringstream pathStream(BigPath);
@@ -34,6 +44,7 @@ void FileSearcher::addDirFilenamesToList(const std::string& DirPath) {
 FileSearcher::FileSearcher() {
     this->pathFilenames = std::vector<std::string>();
     addPathDirsFilesToList();
+    initPathExecutableNames();
 }
 
 std::string FileSearcher::getPathToFile(const std::string & filename) {
@@ -49,16 +60,18 @@ std::string FileSearcher::getPathToFile(const std::string & filename) {
     throw FileNotFoundException(filename);
 }
 
-std::vector<std::string> FileSearcher::getPathFilenames() const {
-    std::vector<std::string> binaryNames(pathFilenames.capacity());
-    for (size_t i = 0; i < pathFilenames.size(); i++) {
-      std::string cmdpath = pathFilenames[i];
-      const size_t pos = cmdpath.find_last_of('/');
-      if (pos != std::string::npos) {binaryNames[i] = cmdpath.substr(pos + 1);}
-      else { binaryNames[i] = cmdpath;}
-    }
-    return binaryNames;
+std::vector<std::string> FileSearcher::getExecutablesFromPath() const {
+    return executableNames;
 }
+
+void FileSearcher::initPathExecutableNames() {
+    for (const auto& cmdpath : pathFilenames) {
+        const size_t pos = cmdpath.find_last_of('/');
+        if (pos != std::string::npos) {executableNames.push_back(cmdpath.substr(pos + 1));}
+        else { executableNames.push_back(cmdpath);}
+    }
+}
+
 
 std::string FileSearcher::getHomedir() {
     const std::string Home = getenv("HOME");

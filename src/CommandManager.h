@@ -11,7 +11,6 @@
 class CommandManager {
     protected:
     std::unordered_map<std::string, std::shared_ptr<CommandInterface>> commands;
-
 public:
      void registerCommand(const std::shared_ptr<CommandInterface>& command);
      void executeCommand(const std::string& name, std::vector<std::string>& arguments) const;
