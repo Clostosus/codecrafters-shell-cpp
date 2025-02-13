@@ -70,10 +70,9 @@ std::vector<std::string> * CommandManager::getAllExternalsWithPrefix(const std::
     const FileSearcher * searcher = FileSearcher::getInstance();
     // ReSharper disable once CppUseAuto
     std::vector<std::string> AllNames = searcher->getExecutablesFromPath();
-    std::vector<std::string> * Matches = new std::vector<std::string>(64);
+    auto * Matches = new std::vector<std::string>;
     for(const std::string& name: AllNames) {
         if(name.find(prefix, 0) != std::string::npos) {
-            if(name.empty()){continue;}
             Matches->push_back(name);
         }
     }

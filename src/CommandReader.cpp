@@ -68,7 +68,6 @@ void CommandReader::autoComplete(std::string &currentInput, CommandManager &mana
         }else if(externalSuggestions->size() > 1) {
             std::cout << '\n' << "\r" << std::flush;
             for (std::string & suggestion : *externalSuggestions ) {
-                if(suggestion.empty()) {continue;}
                 std::cout << suggestion << ' ';
             }
             std::cout << '\n' << "\r$" << currentInput << std::flush;
