@@ -73,6 +73,7 @@ std::vector<std::string> * CommandManager::getAllExternalsWithPrefix(const std::
     std::vector<std::string> * Matches = new std::vector<std::string>(64);
     for(const std::string& name: AllNames) {
         if(name.find(prefix, 0) != std::string::npos) {
+            if(name.empty()){continue;}
             Matches->push_back(name);
         }
     }
