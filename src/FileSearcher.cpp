@@ -44,7 +44,7 @@ void FileSearcher::addDirFilenamesToList(const std::string& DirPath) {
 }
 
 FileSearcher::FileSearcher() {
-    this->pathFilenames = std::unordered_set<std::string>();
+    this->pathFilenames = std::set<std::string>();
     addPathDirsFilesToList();
     initPathExecutableNames();
 }

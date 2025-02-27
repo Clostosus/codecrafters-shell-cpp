@@ -8,7 +8,7 @@
 
 class FileSearcher {
 private:
-    std::unordered_set<std::string> pathFilenames;
+    std::set<std::string> pathFilenames;
     std::set<std::string> executableNames;
 
     static FileSearcher* instance;
