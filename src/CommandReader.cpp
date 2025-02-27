@@ -67,11 +67,12 @@ void CommandReader::autoComplete(std::string &currentInput, CommandManager &mana
             std::cout << '\a' << std::flush;
             AlreadyPressedTab = true;
         }else {
+            int i=0;
             std::cout << '\n' << "\r" << std::flush;
-            for (int i=0; i < suggestions->size()-1; i++) {
+            for (i=0; i < suggestions->size()-1; i++) {
                 std::cout << suggestions->at(i) << ' ' << ' ';
             }
-            std::cout << suggestions->back() << std::flush;
+            std::cout << suggestions->at(i) << std::flush;
             AlreadyPressedTab = false;
         }
     }else if(suggestions->empty()){
