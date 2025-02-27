@@ -61,7 +61,7 @@ void CommandReader::autoComplete(std::string &currentInput, CommandManager &mana
 
     if (suggestions->size() == 1) {
             currentInput = suggestions->front();
-            std::cout << "\r$ " << currentInput << std::flush;
+            std::cout << "\r$ " << currentInput << ' ' << std::flush;
     }else if(suggestions->size() > 1) {
         if(!AlreadyPressedTab) {
             std::cout << '\a' << std::flush;
