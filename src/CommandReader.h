@@ -11,9 +11,12 @@ protected:
    enum ParserState {OutsideArgument, InsideWord, InsideSingleQuotes, InsideDoubleQuotes};
    ParserState currentState;
    bool escapedNextChar;
+   bool AlreadyPressedTab;
+
    void handleStateTransition(const std::string &inputLine,std::string::iterator pos, std::string& currentArgument);
-   static void readCharacterByCharacter( std::string &currentInput, CommandManager &manager);
-   static void autoComplete(std::string &currentInput, CommandManager &manager);
+   void readCharacterByCharacter( std::string &currentInput, CommandManager &manager);
+   void autoComplete(std::string &currentInput, CommandManager &manager);
+   static std::vector<std::string> * collectAllSuggestions(std::string &currentInput,CommandManager &manager);
 public:
    CommandReader();
    // Reads a line from stdin, fills Arguments vector and assigns cmdName, handles escape characters

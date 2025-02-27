@@ -15,6 +15,7 @@
 CommandReader::CommandReader() {
     currentState = ParserState::OutsideArgument;
     escapedNextChar = false;
+    AlreadyPressedTab = false;
 };
 
 void CommandReader::readOneLine(std::string &cmdName, std::vector<std::string> &arguments, CommandManager &cmdManager) {
@@ -56,25 +57,27 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
 }
 
 void CommandReader::autoComplete(std::string &currentInput, CommandManager &manager) {
-    std::vector<std::string> builtinSuggestions = manager.getAllBuiltinsWithPrefix(currentInput);
-    if (builtinSuggestions.size() == 1) {
-        currentInput = builtinSuggestions.front() + ' ';
-        std::cout << "\r$ " << currentInput << std::flush;
-    }else if(builtinSuggestions.empty()) {
-        std::vector<std::string> externalSuggestions = manager.getAllExternalsWithPrefix(currentInput);
-        if (externalSuggestions.size() == 1) {
-            currentInput = externalSuggestions.front() + ' ';
+    std::vector<std::string> * suggestions = collectAllSuggestions(currentInput, manager);
+
+    if (suggestions->size() == 1) {
+            currentInput = suggestions->front() + ' ';
             std::cout << "\r$ " << currentInput << std::flush;
-        }else if(externalSuggestions.size() > 1) {
-            std::cout << '\n' << "\r" << std::flush;
-            for (std::string & suggestion : externalSuggestions ) {
-                std::cout << suggestion << ' ';
-            }
-            std::cout << '\n' << "\r$" << currentInput << std::flush;
-        }else{
+    }else if(suggestions->size() > 1) {
+        if(!AlreadyPressedTab) {
             std::cout << '\a' << std::flush;
+            AlreadyPressedTab = true;
+        }else {
+            std::cout << '\n' << "\r" << std::flush;
+            for (std::string & suggestion : *suggestions ) {
+                std::cout << suggestion << ' ' << ' ';
+            }
+            std::cout << std::flush;
+            AlreadyPressedTab = false;
         }
+    }else if(suggestions->empty()){
+            std::cout << '\a' << std::flush;
     }
+    delete suggestions;
 }
 
 
@@ -108,13 +111,11 @@ void CommandReader::handleStateTransition(const std::string &inputLine, std::str
           }
           break;
         case ParserState::InsideWord:
-            if (currentChar == SPACE ) {
+            if (currentChar == SPACE || currentChar == END) {
                 currentState = ParserState::OutsideArgument;// Argument finished
             } else if (currentChar == SINGLE) {
                 currentState = ParserState::InsideSingleQuotes;
-            } else if(currentChar == END ) {
-                currentState = ParserState::OutsideArgument;
-            }else if (currentChar == BACKSLASH) {
+            } else if (currentChar == BACKSLASH) {
                 escapedNextChar = true;
             } else {
                 currentArgument.push_back(currentChar);
@@ -157,4 +158,18 @@ void CommandReader::handleStateTransition(const std::string &inputLine, std::str
         default:
             throw std::runtime_error("Unknown Parser-State");
     }
+}
+
+std::vector<std::string> *CommandReader::collectAllSuggestions(std::string &currentInput,CommandManager &manager) {
+    auto * AllSuggestions = new std::vector<std::string>;
+    std::vector<std::string> builtinSuggestions = manager.getAllBuiltinsWithPrefix(currentInput);
+    std::vector<std::string> externalSuggestions = manager.getAllExternalsWithPrefix(currentInput);
+    AllSuggestions->reserve(builtinSuggestions.size() + externalSuggestions.size());
+    for(const auto & builtinSuggestion : builtinSuggestions) {
+        AllSuggestions->push_back(builtinSuggestion);
+    }
+    for(const auto & externalSuggestion : externalSuggestions) {
+        AllSuggestions->push_back(externalSuggestion);
+    }
+    return AllSuggestions;
 }
