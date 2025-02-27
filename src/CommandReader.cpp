@@ -166,6 +166,7 @@ std::vector<std::string> *CommandReader::collectAllSuggestions(std::string &curr
     std::vector<std::string> builtinSuggestions = manager.getAllBuiltinsWithPrefix(currentInput);
     std::vector<std::string> externalSuggestions = manager.getAllExternalsWithPrefix(currentInput);
     AllSuggestions->reserve(builtinSuggestions.size() + externalSuggestions.size());
+
     for(const auto & builtinSuggestion : builtinSuggestions) {
         AllSuggestions->push_back(builtinSuggestion);
     }

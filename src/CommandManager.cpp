@@ -66,9 +66,8 @@ std::vector<std::string> CommandManager::getAllBuiltinsWithPrefix(const std::str
     return names;
 }
 
-std::vector<std::string> CommandManager::getAllExternalsWithPrefix(const std::string &prefix) const {
+std::vector<std::string> CommandManager::getAllExternalsWithPrefix(const std::string &prefix) {
     const FileSearcher * searcher = FileSearcher::getInstance();
-    // ReSharper disable once CppUseAuto
     std::vector<std::string> AllNames = searcher->getExecutablesFromPath();
     std::vector<std::string> Matches;
     for(const std::string& name: AllNames) {

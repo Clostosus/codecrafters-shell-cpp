@@ -34,15 +34,17 @@ void FileSearcher::addDirFilenamesToList(const std::string& DirPath) {
         std::string outfilename_str = outfilename.string();
         const char* path = outfilename_str.c_str();
 
-        // Testing whether the path points to a non-directory or not If it does, displays path
+        // Testing whether the path points to a non-directory
         if (stat(path, &sb) == 0 && !(sb.st_mode & S_IFDIR)) {
-            pathFilenames.push_back(outfilename);
+            if(!pathFilenames.contains(outfilename)) {
+                pathFilenames.insert(outfilename);
+            }
         }
     }
 }
 
 FileSearcher::FileSearcher() {
-    this->pathFilenames = std::vector<std::string>();
+    this->pathFilenames = std::unordered_set<std::string>();
     addPathDirsFilesToList();
     initPathExecutableNames();
 }
@@ -56,19 +58,27 @@ std::string FileSearcher::getPathToFile(const std::string & filename) {
                                          }
     );
 
-    if (it != pathFilenames.end()) { return *it.base();}
+    if (it != pathFilenames.end()) { return *it;}
     throw FileNotFoundException(filename);
 }
 
 std::vector<std::string> FileSearcher::getExecutablesFromPath() const {
-    return executableNames;
+    return std::vector(executableNames.begin(), executableNames.end());
 }
 
 void FileSearcher::initPathExecutableNames() {
     for (const auto& cmdpath : pathFilenames) {
         const size_t pos = cmdpath.find_last_of('/');
-        if (pos != std::string::npos) {executableNames.push_back(cmdpath.substr(pos + 1));}
-        else { executableNames.push_back(cmdpath);}
+        if (pos != std::string::npos) {
+            std::string executableName = cmdpath.substr(pos + 1);
+            if(!executableNames.contains(executableName)) {
+                executableNames.insert(cmdpath.substr(pos + 1));
+            }
+        }else {
+            if(!executableNames.contains(cmdpath)) {
+                executableNames.insert(cmdpath);
+            }
+        }
     }
 }
 

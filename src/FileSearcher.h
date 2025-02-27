@@ -3,11 +3,12 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <unordered_set>
 
 class FileSearcher {
 private:
-    std::vector<std::string> pathFilenames;
-    std::vector<std::string> executableNames;
+    std::unordered_set<std::string> pathFilenames;
+    std::unordered_set<std::string> executableNames;
 
     static FileSearcher* instance;
 
