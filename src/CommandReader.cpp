@@ -2,7 +2,9 @@
 #include "CommandReader.h"
 
 #include <iostream>
+#include <set>
 #include <sstream>
+#include <unordered_set>
 
 #define END '\0'
 #define SPACE ' '
@@ -57,29 +59,28 @@ void CommandReader::readCharacterByCharacter(std::string &currentInput, CommandM
 }
 
 void CommandReader::autoComplete(std::string &currentInput, CommandManager &manager) {
-    std::vector<std::string> * suggestions = collectAllSuggestions(currentInput, manager);
+    std::vector<std::string> suggestions = collectAllSuggestions(currentInput, manager);
 
-    if (suggestions->size() == 1) {
-            currentInput = suggestions->front();
+    if (suggestions.size() == 1) {
+            currentInput = suggestions.front();
             std::cout << "\r$ " << currentInput << ' ' << std::flush;
-    }else if(suggestions->size() > 1) {
+    }else if(suggestions.size() > 1) {
         if(!AlreadyPressedTab) {
             std::cout << '\a' << std::flush;
             AlreadyPressedTab = true;
         }else {
             int i=0;
             std::cout << '\n' << "\r" << std::flush;
-            for (i=0; i < suggestions->size()-1; i++) {
-                std::cout << suggestions->at(i) << ' ' << ' ';
+            for (i=0; i < suggestions.size()-1; i++) {
+                std::cout << suggestions.at(i) << ' ' << ' ';
             }
-            std::cout << suggestions->at(i) << std::endl;
+            std::cout << suggestions.at(i) << std::endl;
             std::cout << "\r$ " << currentInput << std::flush;
             AlreadyPressedTab = false;
         }
-    }else if(suggestions->empty()){
+    }else if(suggestions.empty()){
             std::cout << '\a' << std::flush;
     }
-    delete suggestions;
 }
 
 
@@ -162,17 +163,18 @@ void CommandReader::handleStateTransition(const std::string &inputLine, std::str
     }
 }
 
-std::vector<std::string> *CommandReader::collectAllSuggestions(std::string &currentInput,CommandManager &manager) {
-    auto * AllSuggestions = new std::vector<std::string>;
+std::vector<std::string> CommandReader::collectAllSuggestions(std::string &currentInput,CommandManager &manager) {
+    std::set<std::string> AllSuggestions;
     std::vector<std::string> builtinSuggestions = manager.getAllBuiltinsWithPrefix(currentInput);
     std::vector<std::string> externalSuggestions = manager.getAllExternalsWithPrefix(currentInput);
-    AllSuggestions->reserve(builtinSuggestions.size() + externalSuggestions.size());
 
     for(const auto & builtinSuggestion : builtinSuggestions) {
-        AllSuggestions->push_back(builtinSuggestion);
+        AllSuggestions.insert(builtinSuggestion);
     }
     for(const auto & externalSuggestion : externalSuggestions) {
-        AllSuggestions->push_back(externalSuggestion);
+        if(!AllSuggestions.contains(externalSuggestion)) {
+          AllSuggestions.insert(externalSuggestion);
+        }
     }
-    return AllSuggestions;
+    return std::vector(AllSuggestions.begin(), AllSuggestions.end());
 }
