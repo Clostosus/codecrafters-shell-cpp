@@ -37,7 +37,7 @@ void FileSearcher::addDirFilenamesToList(const std::string& DirPath) {
         // Testing whether the path points to a non-directory
         if (stat(path, &sb) == 0 && !(sb.st_mode & S_IFDIR)) {
             if(!pathFilenames.contains(outfilename)) {
-                pathFilenames.insert(outfilename);
+                pathFilenames.insert(outfilename_str);
             }
         }
     }

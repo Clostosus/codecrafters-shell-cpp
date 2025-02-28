@@ -59,7 +59,7 @@ std::vector<std::string> CommandManager::getAllBuiltinsWithPrefix(const std::str
 
     for (const auto& pair : this->commands) {
         const std::string& key = pair.first;
-        if ( key.find(prefix) == 0) {
+        if ( key.substr(0,prefix.size()) == prefix) {
             names.push_back(key);
         }
     }
@@ -71,7 +71,7 @@ std::vector<std::string> CommandManager::getAllExternalsWithPrefix(const std::st
     std::vector<std::string> AllNames = searcher->getExecutablesFromPath();
     std::vector<std::string> Matches;
     for(const std::string& name: AllNames) {
-        if(name.find(prefix) == 0) {
+        if( name.substr(0,prefix.size()) == prefix) {
             Matches.push_back(name);
         }
     }
