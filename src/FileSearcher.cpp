@@ -45,11 +45,12 @@ void FileSearcher::addDirFilenamesToList(const std::string& DirPath) {
 
 FileSearcher::FileSearcher() {
     this->pathFilenames = std::set<std::string>();
-    addPathDirsFilesToList();
-    initPathExecutableNames();
 }
 
 std::string FileSearcher::getPathToFile(const std::string & filename) {
+    this->pathFilenames.clear();
+    addPathDirsFilesToList();
+    initPathExecutableNames();
 
     const auto it = std::ranges::find_if(pathFilenames ,
                                          [&filename](const std::string& str) {
